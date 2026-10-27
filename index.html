@@ -1,0 +1,3096 @@
+html_content = '''<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TA Master 實戰覆盤工作台 | 巨人傑「交易即工作」× J Law 冠軍體系</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Zen+Maru+Gothic:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-main: #F8F7F4;
+      --bg-card: #FFFFFF;
+      --bg-card-sub: #F3F1EC;
+      --border-color: #E6E2DB;
+      --border-light: #ECE8E1;
+      --text-main: #1C1917;
+      --text-muted: #78716C;
+      --text-faint: #A8A29E;
+      --accent-primary: #2563EB;
+      --accent-jlaw: #D97706;
+      --accent-jlaw-bg: #FEF3C7;
+      --c-up: #10B981;
+      --c-down: #EF4444;
+      --font-family: 'Zen Maru Gothic', 'Plus Jakarta Sans', sans-serif;
+    }
+
+    [data-theme="terminal"] {
+      --bg-main: #EEF2F6;
+      --bg-card: #FFFFFF;
+      --bg-card-sub: #E2E8F0;
+      --border-color: #CBD5E1;
+      --border-light: #E2E8F0;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --text-faint: #94A3B8;
+      --accent-primary: #0F766E;
+      --accent-jlaw: #B45309;
+      --accent-jlaw-bg: #FEF3C7;
+      --c-up: #10B981;
+      --c-down: #EF4444;
+    }
+
+    [data-theme="ft"] {
+      --bg-main: #FFF2E8;
+      --bg-card: #FDF7F2;
+      --bg-card-sub: #F7E7DC;
+      --border-color: #EAD4C3;
+      --border-light: #F2E3D5;
+      --text-main: #2A1F17;
+      --text-muted: #7A6657;
+      --text-faint: #A89585;
+      --accent-primary: #9A3412;
+      --accent-jlaw: #C2410C;
+      --accent-jlaw-bg: #FFEDD5;
+      --c-up: #059669;
+      --c-down: #DC2626;
+    }
+
+    [data-theme="sage"] {
+      --bg-main: #F1F5F2;
+      --bg-card: #FFFFFF;
+      --bg-card-sub: #E5EDE7;
+      --border-color: #D3DFD7;
+      --border-light: #E2EBE5;
+      --text-main: #13241B;
+      --text-muted: #566B5E;
+      --text-faint: #84998C;
+      --accent-primary: #1E5E4B;
+      --accent-jlaw: #B45309;
+      --accent-jlaw-bg: #FEF3C7;
+      --c-up: #10B981;
+      --c-down: #E11D48;
+    }
+
+    [data-theme="minimal"] {
+      --bg-main: #F8FAFC;
+      --bg-card: #FFFFFF;
+      --bg-card-sub: #F1F5F9;
+      --border-color: #E2E8F0;
+      --border-light: #EDF2F7;
+      --text-main: #020617;
+      --text-muted: #64748B;
+      --text-faint: #94A3B8;
+      --accent-primary: #3B82F6;
+      --accent-jlaw: #D97706;
+      --accent-jlaw-bg: #FEF3C7;
+      --c-up: #10B981;
+      --c-down: #EF4444;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      line-height: 1.65;
+      letter-spacing: 0.015em;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .font-mono-data {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .card-theme {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+    }
+
+    .card-theme-sub {
+      background-color: var(--bg-card-sub);
+      border: 1px solid var(--border-light);
+    }
+
+    .text-up { color: var(--c-up); }
+    .text-down { color: var(--c-down); }
+    .bg-up { background-color: var(--c-up); }
+    .bg-down { background-color: var(--c-down); }
+    .border-up { border-color: var(--c-up); }
+    .border-down { border-color: var(--c-down); }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+    /* Tab transitions */
+    .tab-btn.active {
+      background-color: var(--accent-primary);
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+
+    .tab-btn-jlaw.active {
+      background-color: #B45309;
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+
+    /* Flip Card */
+    .flashcard {
+      perspective: 1000px;
+    }
+    .flashcard-inner {
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .flashcard.flipped .flashcard-inner {
+      transform: rotateY(180deg);
+    }
+    .flashcard-front, .flashcard-back {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .flashcard-back {
+      transform: rotateY(180deg);
+    }
+
+    .sidebar-transition {
+      transition: transform 0.25s ease-in-out, width 0.25s ease-in-out;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-amber-100 selection:text-amber-900">
+
+  <!-- TOP BAR -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-stone-200 px-4 py-2.5 flex items-center justify-between shadow-xs" style="background-color: var(--bg-card); border-color: var(--border-color);">
+    <div class="flex items-center space-x-3">
+      <button onclick="toggleSidebar()" class="p-2 rounded-lg hover:bg-stone-100 transition text-stone-600 focus:outline-none" title="收合/展開側邊欄">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div class="flex items-center space-x-2">
+        <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+        <h1 class="text-base font-bold tracking-tight flex items-center gap-2">
+          TA Master <span class="text-xs px-2 py-0.5 rounded-full font-medium" style="background-color: var(--bg-card-sub); color: var(--text-muted); border: 1px solid var(--border-light);">實戰覆盤工作台</span>
+        </h1>
+      </div>
+      <div class="hidden md:flex items-center space-x-2 text-xs pl-3 border-l" style="border-color: var(--border-light);">
+        <span class="px-2 py-0.5 rounded bg-amber-50 text-amber-800 border border-amber-200 font-medium">⚡ 巨人傑 交易即工作</span>
+        <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium">🏆 J Law USIC 353% 冠軍體系</span>
+      </div>
+    </div>
+
+    <!-- Quick Tools & Selectors -->
+    <div class="flex items-center space-x-2 sm:space-x-3">
+      <!-- Direct Jump to J Law Hub -->
+      <button onclick="switchModule('module-jlaw')" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-amber-900 bg-gradient-to-r from-amber-100 via-amber-200 to-amber-100 border border-amber-300 hover:shadow-xs transition transform hover:-translate-y-0.5">
+        <span>🏆 J Law 獨立作戰室</span>
+        <span class="text-[10px] bg-amber-500 text-white px-1.5 py-0.2 rounded font-mono">1499%</span>
+      </button>
+
+      <!-- Theme Switcher -->
+      <div class="flex items-center space-x-1.5 text-xs">
+        <label class="hidden lg:inline text-stone-500 font-medium">主題:</label>
+        <select id="themeSelector" onchange="changeTheme(this.value)" class="text-xs px-2 py-1 rounded border bg-transparent font-medium focus:ring-1 focus:ring-stone-400" style="border-color: var(--border-color); color: var(--text-main);">
+          <option value="warm">☕ 晨曦紙質灰 (預設)</option>
+          <option value="terminal">💼 彭博終端灰</option>
+          <option value="ft">📰 金融時報暖米</option>
+          <option value="sage">🌿 鼠尾草灰綠</option>
+          <option value="minimal">⚪ 經典極簡白</option>
+        </select>
+      </div>
+
+      <!-- Font Switcher -->
+      <div class="flex items-center space-x-1.5 text-xs">
+        <label class="hidden xl:inline text-stone-500 font-medium">字體:</label>
+        <select id="fontSelector" onchange="changeFont(this.value)" class="text-xs px-2 py-1 rounded border bg-transparent font-medium focus:ring-1 focus:ring-stone-400" style="border-color: var(--border-color); color: var(--text-main);">
+          <option value="zen">🌱 溫潤圓體</option>
+          <option value="sans">📖 人文黑體</option>
+          <option value="serif">✒️ 書卷宋體</option>
+        </select>
+      </div>
+
+      <!-- Export / Import -->
+      <div class="flex items-center space-x-1">
+        <button onclick="exportData()" class="p-1.5 rounded border hover:bg-stone-100 text-stone-600 text-xs flex items-center gap-1" style="border-color: var(--border-color);" title="匯出備份 JSON">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+          <span class="hidden md:inline">備份</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER -->
+  <div class="flex-1 flex overflow-hidden">
+    
+    <!-- SIDEBAR -->
+    <aside id="mainSidebar" class="w-72 flex-shrink-0 card-theme border-r flex flex-col z-30 transition-all duration-200 overflow-y-auto">
+      <!-- Navigation Menu -->
+      <div class="p-3 space-y-1">
+        <div class="text-[11px] font-bold tracking-wider text-stone-400 uppercase px-3 py-1">核心作戰模組</div>
+
+        <!-- Module 1: 學習區 -->
+        <button onclick="switchModule('module-learn')" id="nav-module-learn" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition text-left hover:bg-stone-100/80">
+          <div class="flex items-center space-x-2.5">
+            <span class="text-base">📚</span>
+            <span class="font-semibold">循序漸進學習區</span>
+          </div>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-stone-100 text-stone-500 font-mono">Lv 1~5</span>
+        </button>
+
+        <!-- Module 5 (VIP): J Law 獨立專區 -->
+        <button onclick="switchModule('module-jlaw')" id="nav-module-jlaw" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition text-left bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 hover:border-amber-400 text-amber-900 shadow-xs">
+          <div class="flex items-center space-x-2.5">
+            <span class="text-base">🏆</span>
+            <div>
+              <div class="font-bold tracking-tight">J Law 冠軍體系專區</div>
+              <div class="text-[10px] text-amber-700 font-normal">USIC 兩年 1499% 破紀錄</div>
+            </div>
+          </div>
+          <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-200 text-amber-900 font-mono font-bold">5大模組</span>
+        </button>
+
+        <!-- Module 2: 速查圖鑑 -->
+        <button onclick="switchModule('module-wiki')" id="nav-module-wiki" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition text-left hover:bg-stone-100/80">
+          <div class="flex items-center space-x-2.5">
+            <span class="text-base">🔍</span>
+            <span class="font-semibold">速查圖鑑與抽考閃卡</span>
+          </div>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-stone-100 text-stone-500 font-mono" id="sidebarCardCount">44 卡</span>
+        </button>
+
+        <!-- Module 3: 覆盤工作台 -->
+        <button onclick="switchModule('module-review')" id="nav-module-review" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition text-left hover:bg-stone-100/80">
+          <div class="flex items-center space-x-2.5">
+            <span class="text-base">📝</span>
+            <div>
+              <div class="font-semibold">每日覆盤與檢討工作台</div>
+              <div class="text-[10px] text-stone-400">巨人傑考勤 × J Law 風控</div>
+            </div>
+          </div>
+          <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        </button>
+
+        <!-- Module 4: 圖表沙盒 -->
+        <button onclick="switchModule('module-sandbox')" id="nav-module-sandbox" class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium transition text-left hover:bg-stone-100/80">
+          <div class="flex items-center space-x-2.5">
+            <span class="text-base">🔌</span>
+            <span class="font-semibold">實時圖表與 API 沙盒</span>
+          </div>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono">Live</span>
+        </button>
+      </div>
+
+      <!-- Market Clocks (HKT) -->
+      <div class="p-3 mx-3 my-2 rounded-xl card-theme-sub text-xs">
+        <div class="text-[11px] font-bold text-stone-500 uppercase tracking-wider mb-2 flex items-center justify-between">
+          <span>三大市場開盤時間 (HKT)</span>
+          <span class="font-mono text-[10px] text-stone-400" id="liveHktTime">--:--:--</span>
+        </div>
+        <div class="space-y-1.5 font-mono text-[11px]">
+          <div class="flex items-center justify-between">
+            <span class="flex items-center gap-1.5 text-stone-600">🇰🇷 韓股 KRX</span>
+            <span class="text-stone-500">08:00 - 14:30</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="flex items-center gap-1.5 text-stone-600">🇭🇰 港股 HKEX</span>
+            <span class="text-stone-500">09:30 - 16:00</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="flex items-center gap-1.5 text-stone-600">🇺🇸 美股 US</span>
+            <span class="text-stone-500">21:30 - 04:00 (夏)</span>
+          </div>
+        </div>
+        <div class="mt-2 pt-2 border-t border-stone-200/60 text-[10px] text-stone-400">
+          色彩習慣：<span class="text-emerald-600 font-bold">綠漲</span> / <span class="text-rose-600 font-bold">紅跌</span>
+        </div>
+      </div>
+
+      <!-- Quick Stats Card -->
+      <div class="mt-auto p-3 m-3 rounded-xl card-theme text-xs border">
+        <div class="text-[11px] font-bold text-stone-400 uppercase mb-1">職人修行進度</div>
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-stone-600">連續執勤天數</span>
+          <span class="font-mono font-bold text-amber-600" id="sidebarStreak">0 天</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-stone-600">覆盤日誌</span>
+          <span class="font-mono font-bold text-stone-700" id="sidebarJournalCount">0 篇</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CONTENT VIEW AREA -->
+    <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8" id="contentMain">
+
+      <!-- ========================================================================= -->
+      <!-- MODULE 5: 🏆 J LAW 冠軍交易體系專區 (獨立完整大模組) -->
+      <!-- ========================================================================= -->
+      <section id="module-jlaw" class="module-view space-y-6">
+        
+        <!-- Header Banner -->
+        <div class="rounded-2xl p-6 border relative overflow-hidden bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-transparent border-amber-300">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-xs px-2.5 py-0.5 rounded-full bg-amber-600 text-white font-bold font-mono">USIC 2024 & 2025 雙冠王</span>
+                <span class="text-xs text-amber-800 font-medium">破 40 年歷史紀錄 • 兩年複合回報 1,499%</span>
+              </div>
+              <h2 class="text-2xl font-bold tracking-tight text-stone-900 flex items-center gap-2">
+                <span>🏆</span> J Law 交易體系深度解構：微觀價格行為與動態風險預算工程
+              </h2>
+              <p class="text-xs sm:text-sm text-stone-600 mt-1 max-w-3xl">
+                這套體系證明了：頂級交易絕非依靠不可複製的靈感或賭博，而是一套嚴密規則化、可客觀執行的「金融工程」。即使是太太 Judy Lai 機械式執行同一套「趁弱賣出」策略，也能斩獲 449.1% 年回報！
+              </p>
+            </div>
+            <div class="flex items-center gap-2 self-start lg:self-auto">
+              <span class="text-xs font-mono bg-white/80 border border-amber-200 px-3 py-1.5 rounded-lg text-amber-900">
+                日常單筆回撤：<strong class="text-emerald-700 font-bold">0.3% ~ 0.5%</strong>
+              </span>
+            </div>
+          </div>
+
+          <!-- J Law Sub-Tabs Bar -->
+          <div class="mt-6 pt-4 border-t border-amber-200/80 flex flex-wrap gap-2">
+            <button onclick="switchJlawSubtab('jlaw-tab-overview')" id="btn-jlaw-overview" class="tab-btn-jlaw px-3.5 py-1.5 rounded-lg text-xs font-medium transition active">
+              🧭 體系總覽與五步看圖 SOP
+            </button>
+            <button onclick="switchJlawSubtab('jlaw-tab-meta')" id="btn-jlaw-meta" class="tab-btn-jlaw px-3.5 py-1.5 rounded-lg text-xs font-medium transition card-theme">
+              🎯 M.E.T.A. 與 VCP 互動實驗室
+            </button>
+            <button onclick="switchJlawSubtab('jlaw-tab-cases')" id="btn-jlaw-cases" class="tab-btn-jlaw px-3.5 py-1.5 rounded-lg text-xs font-medium transition card-theme">
+              ⚔️ 8 大 USIC 實戰奪冠戰役拆解
+            </button>
+            <button onclick="switchJlawSubtab('jlaw-tab-sizing')" id="btn-jlaw-sizing" class="tab-btn-jlaw px-3.5 py-1.5 rounded-lg text-xs font-medium transition card-theme">
+              💰 持貨、利潤墊與雙軌賣出沙盒
+            </button>
+            <button onclick="switchJlawSubtab('jlaw-tab-mra')" id="btn-jlaw-mra" class="tab-btn-jlaw px-3.5 py-1.5 rounded-lg text-xs font-medium transition card-theme">
+              📜 MRA 賽後系統與 18 條贏家守則
+            </button>
+          </div>
+        </div>
+
+        <!-- SUBTAB 1: 體系總覽與選股 -->
+        <div id="jlaw-tab-overview" class="jlaw-subcontent space-y-6">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left 2 Cols: Core Framework -->
+            <div class="lg:col-span-2 space-y-6">
+              
+              <!-- 雙軌模式切換器 -->
+              <div class="card-theme rounded-xl p-5 border">
+                <h3 class="text-sm font-bold flex items-center justify-between mb-3">
+                  <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                    宏觀環境自適應：雙軌交易模式 (Market Regime Switching)
+                  </span>
+                  <span class="text-xs font-normal text-stone-400">承認市場沒有萬能策略</span>
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="p-4 rounded-xl card-theme-sub border space-y-2">
+                    <div class="flex items-center justify-between">
+                      <h4 class="text-xs font-bold text-emerald-800">1. 趨勢持倉模式 (Position Trading)</h4>
+                      <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono">數週至數月</span>
+                    </div>
+                    <p class="text-xs text-stone-600">
+                      <strong>適用市況：</strong>強勢牛市、降息週期、經濟未見衰退、大盤各級均線多頭排列。<br>
+                      <strong>戰術目標：</strong>買入並長坐領頭羊（如 2024 年 SMCI、PLTR），結合「趁弱賣出」移動止盈，徹底食盡翻倍主升浪。
+                    </p>
+                  </div>
+
+                  <div class="p-4 rounded-xl card-theme-sub border space-y-2">
+                    <div class="flex items-center justify-between">
+                      <h4 class="text-xs font-bold text-amber-800">2. 波段交易模式 (Swing Trading)</h4>
+                      <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-mono">數天至數週</span>
+                    </div>
+                    <p class="text-xs text-stone-600">
+                      <strong>適用市況：</strong>利率震盪、橫向拉鋸市（Whipsaw）、標的缺乏實質盈利催化劑。<br>
+                      <strong>戰術目標：</strong>縮短持倉，於 M.E.T.A. 低點進場，觸及通道上沿或橫向阻力時「趁強賣出」，絕不長坐坐過山車。
+                    </p>
+                  </div>
+                </div>
+
+                <div class="mt-4 p-3 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-900">
+                  <strong>⚠️ J Law 選股鐵律：</strong>「先技術分析、後基本面，次序絕不可顛倒！」大資金建倉必定率先在價量留下機構足跡（Institutional Footprints）。只交易看到的，不交易預測的。
+                </div>
+              </div>
+
+              <!-- 啟蒙大師基因圖譜 -->
+              <div class="card-theme rounded-xl p-5 border">
+                <h3 class="text-sm font-bold mb-3 flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                  華爾街五大傳奇理論在 J Law 體系中的轉化
+                </h3>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr class="border-b" style="border-color: var(--border-color); background-color: var(--bg-card-sub);">
+                        <th class="py-2.5 px-3 font-semibold">啟蒙大師與經典著作</th>
+                        <th class="py-2.5 px-3 font-semibold">核心汲取理論</th>
+                        <th class="py-2.5 px-3 font-semibold">J Law 體系中的轉化與實戰應用</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-stone-200">
+                      <tr>
+                        <td class="py-2.5 px-3 font-medium">William O'Neil<br><span class="text-stone-400 text-[10px]">《笑傲股市》CANSLIM</span></td>
+                        <td class="py-2.5 px-3 text-stone-600">超級成長股特徵、機構足跡、杯柄形態</td>
+                        <td class="py-2.5 px-3 text-stone-700">確立「強勢板塊領頭羊」選股標準，在基本面與技術面共振時長線長坐。</td>
+                      </tr>
+                      <tr>
+                        <td class="py-2.5 px-3 font-medium">Mark Minervini<br><span class="text-stone-400 text-[10px]">SEPA / VCP 體系</span></td>
+                        <td class="py-2.5 px-3 text-stone-600">Stage 2 上升趨勢、波動收縮形態 VCP</td>
+                        <td class="py-2.5 px-3 text-stone-700">量化為波幅遞減至 10% 緊湊區、成交量枯竭，並延伸出 M.E.T.A. 多重拉回買點。</td>
+                      </tr>
+                      <tr>
+                        <td class="py-2.5 px-3 font-medium">Mark Douglas<br><span class="text-stone-400 text-[10px]">《交易心理分析》</span></td>
+                        <td class="py-2.5 px-3 text-stone-600">概率思維、消除單筆執念、情緒紀律</td>
+                        <td class="py-2.5 px-3 text-stone-700">建立大樣本優勢期望值，並設計低谷期「清倉重置」與 0.15% 微風險防禦機制。</td>
+                      </tr>
+                      <tr>
+                        <td class="py-2.5 px-3 font-medium">Jesse Livermore<br><span class="text-stone-400 text-[10px]">《股票作手回憶錄》</span></td>
+                        <td class="py-2.5 px-3 text-stone-600">順勢而為、關鍵樞紐點、利潤墊加碼</td>
+                        <td class="py-2.5 px-3 text-stone-700">嚴禁向下攤平；發展出「用已實現利潤去承擔新風險」的冠軍全壘打注碼心法。</td>
+                      </tr>
+                      <tr>
+                        <td class="py-2.5 px-3 font-medium">Peter Lynch<br><span class="text-stone-400 text-[10px]">彼得·林奇常識投資</span></td>
+                        <td class="py-2.5 px-3 text-stone-600">產業催化劑、商業模式理解</td>
+                        <td class="py-2.5 px-3 text-stone-700">評估中長線產業傳導（如 AI 硬件向軟件醫療擴散），決定個股是做短期波段還是長線長坐。</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Col: 5-Step Routine -->
+            <div class="space-y-6">
+              <div class="card-theme rounded-xl p-5 border">
+                <h3 class="text-sm font-bold mb-3 flex items-center justify-between">
+                  <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    J Law「五步看圖標準 SOP」
+                  </span>
+                  <span class="text-[10px] text-stone-400">杜絕主觀偏見</span>
+                </h3>
+                <p class="text-xs text-stone-500 mb-3">打開任何圖表，必須按照此順序逐一檢視：</p>
+                <div class="space-y-2.5 text-xs">
+                  <div class="p-2.5 rounded-lg card-theme-sub border flex items-start gap-2.5">
+                    <span class="w-5 h-5 rounded-full bg-amber-500 text-white font-mono font-bold flex items-center justify-center text-[10px] flex-shrink-0">1</span>
+                    <div>
+                      <strong class="text-stone-800">短期動能與成交量 (Momentum)</strong>
+                      <p class="text-stone-500 text-[11px] mt-0.5">一眼審視近期是否有成交量暴增伴隨大陽線，確認機構大資金進場痕跡。</p>
+                    </div>
+                  </div>
+                  <div class="p-2.5 rounded-lg card-theme-sub border flex items-start gap-2.5">
+                    <span class="w-5 h-5 rounded-full bg-amber-500 text-white font-mono font-bold flex items-center justify-center text-[10px] flex-shrink-0">2</span>
+                    <div>
+                      <strong class="text-stone-800">整體趨勢判斷 (Trend Stage)</strong>
+                      <p class="text-stone-500 text-[11px] mt-0.5">拉長週期確認處於第二階段（Stage 2）長期上升趨勢中，非超跌反彈。</p>
+                    </div>
+                  </div>
+                  <div class="p-2.5 rounded-lg card-theme-sub border flex items-start gap-2.5">
+                    <span class="w-5 h-5 rounded-full bg-amber-500 text-white font-mono font-bold flex items-center justify-center text-[10px] flex-shrink-0">3</span>
+                    <div>
+                      <strong class="text-stone-800">標記關鍵結構點位 (Key Levels)</strong>
+                      <p class="text-stone-500 text-[11px] mt-0.5">畫出歷史重要橫向阻力與支撐區（尤其是阻力翻轉支撐 Flipping 區）。</p>
+                    </div>
+                  </div>
+                  <div class="p-2.5 rounded-lg card-theme-sub border flex items-start gap-2.5">
+                    <span class="w-5 h-5 rounded-full bg-amber-500 text-white font-mono font-bold flex items-center justify-center text-[10px] flex-shrink-0">4</span>
+                    <div>
+                      <strong class="text-stone-800">移動平均線系統 (Moving Averages)</strong>
+                      <p class="text-stone-500 text-[11px] mt-0.5">檢視 10/20/50/200MA 排列，提防大盤牛市中跌回 200MA 的落後股陷阱。</p>
+                    </div>
+                  </div>
+                  <div class="p-2.5 rounded-lg card-theme-sub border flex items-start gap-2.5">
+                    <span class="w-5 h-5 rounded-full bg-amber-500 text-white font-mono font-bold flex items-center justify-center text-[10px] flex-shrink-0">5</span>
+                    <div>
+                      <strong class="text-stone-800">微觀價格行為 (Price Action)</strong>
+                      <p class="text-stone-500 text-[11px] mt-0.5">最後才看具體 K 線收盤、VCP 收縮幅度（&lt;10%）與回調成交量極度萎縮。</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Judy Lai Proof -->
+              <div class="p-4 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 text-xs space-y-2">
+                <div class="font-bold text-emerald-900 flex items-center gap-1.5">
+                  <span>🏅</span> 實證奇蹟：Judy Lai 的機械化複製
+                </div>
+                <p class="text-emerald-800">
+                  J Law 太太 Judy Lai 在 2024 年以 <strong>449.1%</strong> 奪得百萬以下真倉冠軍、<strong>273.8%</strong> 奪得百萬以上亞軍。她只依靠嚴格執行 J Law 的選股與單一「趁弱賣出」規則。
+                </p>
+                <div class="text-[11px] text-emerald-700 font-medium">
+                  👉 證明：一套客觀一致的系統，長期期望值遠勝於飄忽不定的天才直覺！
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SUBTAB 2: M.E.T.A. 幾何實驗室 -->
+        <div id="jlaw-tab-meta" class="jlaw-subcontent hidden space-y-6">
+          <div class="card-theme rounded-xl p-5 border">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-4">
+              <div>
+                <h3 class="text-sm font-bold flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                  M.E.T.A. (Multiple Edge Trading Area) 幾何結構與圖層實驗室
+                </h3>
+                <p class="text-xs text-stone-500 mt-0.5">
+                  在同一個狹窄價格區間內，匯集多個獨立技術分析優勢形成不同流派市場參與者的「共識點」。
+                </p>
+              </div>
+              <!-- Layer Toggles -->
+              <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                <span class="text-stone-400 text-[11px]">切換圖層:</span>
+                <button onclick="toggleMetaLayer('vcp')" id="layer-btn-vcp" class="px-2.5 py-1 rounded border text-xs font-medium bg-amber-50 text-amber-800 border-amber-300">1. VCP收縮</button>
+                <button onclick="toggleMetaLayer('utl')" id="layer-btn-utl" class="px-2.5 py-1 rounded border text-xs font-medium bg-amber-50 text-amber-800 border-amber-300">2. 兩點UTL與危險點</button>
+                <button onclick="toggleMetaLayer('channel')" id="layer-btn-channel" class="px-2.5 py-1 rounded border text-xs font-medium bg-amber-50 text-amber-800 border-amber-300">3. 2+1平行通道</button>
+                <button onclick="toggleMetaLayer('flip')" id="layer-btn-flip" class="px-2.5 py-1 rounded border text-xs font-medium bg-amber-50 text-amber-800 border-amber-300">4. 阻力轉支撐</button>
+                <button onclick="toggleMetaLayer('ma')" id="layer-btn-ma" class="px-2.5 py-1 rounded border text-xs font-medium bg-amber-50 text-amber-800 border-amber-300">5. 均線與量縮</button>
+              </div>
+            </div>
+
+            <!-- Interactive SVG Diagram -->
+            <div class="relative bg-stone-900 rounded-xl p-4 overflow-hidden border border-stone-800" style="min-height: 380px;">
+              <svg id="metaSvgCanvas" class="w-full h-80" viewBox="0 0 800 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Background Grid -->
+                <line x1="0" y1="80" x2="800" y2="80" stroke="#334155" stroke-dasharray="4 4" stroke-width="0.5"/>
+                <line x1="0" y1="160" x2="800" y2="160" stroke="#334155" stroke-dasharray="4 4" stroke-width="0.5"/>
+                <line x1="0" y1="240" x2="800" y2="240" stroke="#334155" stroke-dasharray="4 4" stroke-width="0.5"/>
+
+                <!-- Layer 3: 2+1 Parallel Channel Top Line (TRL) -->
+                <g id="svg-layer-channel">
+                  <line x1="180" y1="70" x2="760" y2="40" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="5 5"/>
+                  <text x="620" y="55" fill="#F59E0B" font-size="11" font-family="monospace">TRL 通道上沿 (趁強離場點)</text>
+                </g>
+
+                <!-- Layer 4: Flipping Resistance to Support Zone -->
+                <g id="svg-layer-flip">
+                  <rect x="180" y="145" width="580" height="24" fill="#3B82F6" fill-opacity="0.15" rx="3"/>
+                  <line x1="180" y1="157" x2="760" y2="157" stroke="#60A5FA" stroke-width="1.5" stroke-dasharray="4 2"/>
+                  <text x="490" y="140" fill="#93C5FD" font-size="11" font-weight="bold">橫向阻力翻轉支撐帶 (Flipping Zone)</text>
+                </g>
+
+                <!-- Layer 1: VCP Contractions -->
+                <g id="svg-layer-vcp">
+                  <!-- Wave 1 (-25%) -->
+                  <path d="M 60 160 Q 110 90 160 157 Q 190 230 220 180" stroke="#94A3B8" stroke-width="1.5" fill="none"/>
+                  <text x="130" y="240" fill="#94A3B8" font-size="10">1. 收縮 -24%</text>
+                  <!-- Wave 2 (-12%) -->
+                  <path d="M 220 180 Q 250 130 280 157 Q 300 200 320 170" stroke="#94A3B8" stroke-width="1.5" fill="none"/>
+                  <text x="270" y="215" fill="#94A3B8" font-size="10">2. 收縮 -11%</text>
+                  <!-- Wave 3 (<10% Tight) -->
+                  <path d="M 320 170 Q 335 150 350 157 Q 360 175 370 160" stroke="#F59E0B" stroke-width="2" fill="none"/>
+                  <rect x="345" y="150" width="30" height="25" fill="#F59E0B" fill-opacity="0.2" stroke="#F59E0B" stroke-dasharray="2 2"/>
+                  <text x="330" y="135" fill="#FCD34D" font-size="10" font-weight="bold">緊湊區 &lt;10%</text>
+                </g>
+
+                <!-- Layer 2: 2-Point UTL & Danger Point -->
+                <g id="svg-layer-utl">
+                  <!-- Low 1 (220, 210) & Low 2 (320, 195) -->
+                  <circle cx="220" cy="210" r="4" fill="#10B981"/>
+                  <circle cx="320" cy="195" r="4" fill="#10B981"/>
+                  <line x1="160" y1="220" x2="720" y2="135" stroke="#10B981" stroke-width="2"/>
+                  <text x="610" y="165" fill="#34D399" font-size="11">兩點上升趨勢線 (UTL)</text>
+                  
+                  <!-- Danger Point (首次回踩UTL) -->
+                  <circle cx="510" cy="166" r="6" stroke="#EF4444" stroke-width="2" fill="#7F1D1D" fill-opacity="0.8"/>
+                  <text x="470" y="200" fill="#F87171" font-size="10" font-weight="bold">⚠️ 危險點 (Danger Point)</text>
+                  <text x="460" y="215" fill="#FCA5A5" font-size="9">首次急跌觸及, 嚴禁左側抄底</text>
+                </g>
+
+                <!-- Layer 5: Dynamic MAs & Dry-up Volume -->
+                <g id="svg-layer-ma">
+                  <!-- 20MA Line -->
+                  <path d="M 60 220 Q 250 190 380 150 T 600 135 T 760 100" stroke="#A855F7" stroke-width="2" fill="none"/>
+                  <text x="690" y="95" fill="#C084FC" font-size="10">20MA 動態均線</text>
+                  
+                  <!-- Volume bars at bottom -->
+                  <rect x="365" y="280" width="10" height="35" fill="#10B981"/>
+                  <text x="350" y="275" fill="#34D399" font-size="9">放量突破Pivot</text>
+                  <rect x="580" y="300" width="8" height="15" fill="#64748B"/>
+                  <rect x="590" y="305" width="8" height="10" fill="#64748B"/>
+                  <text x="560" y="295" fill="#94A3B8" font-size="9">回調成交量極度萎縮</text>
+                </g>
+
+                <!-- THE M.E.T.A. ZONE (CONVERGENCE) -->
+                <g id="svg-layer-metazone">
+                  <!-- Golden Bullseye at (600, 155) -->
+                  <circle cx="600" cy="155" r="18" fill="#F59E0B" fill-opacity="0.3" stroke="#F59E0B" stroke-width="2" class="animate-pulse"/>
+                  <circle cx="600" cy="155" r="4" fill="#F59E0B"/>
+                  <!-- Arrow pointing to M.E.T.A. -->
+                  <path d="M 600 230 L 600 185" stroke="#F59E0B" stroke-width="2" marker-end="url(#arrow)"/>
+                  <rect x="520" y="235" width="160" height="32" rx="4" fill="#B45309" stroke="#FCD34D"/>
+                  <text x="530" y="250" fill="#FEF3C7" font-size="11" font-weight="bold">🎯 M.E.T.A. 多重優勢進場區</text>
+                  <text x="530" y="262" fill="#FDE68A" font-size="9">共振成立：阻力翻轉 + 20MA + UTL + 量縮</text>
+
+                  <!-- Stop Loss Level just below -->
+                  <line x1="560" y1="175" x2="640" y2="175" stroke="#EF4444" stroke-width="2" stroke-dasharray="3 3"/>
+                  <text x="645" y="178" fill="#F87171" font-size="10">緊窄止損位 (&lt;2~3%)</text>
+                </g>
+              </svg>
+
+              <!-- Legend Overlay -->
+              <div class="absolute bottom-2 left-4 text-[11px] text-stone-300 bg-stone-950/80 px-3 py-1.5 rounded border border-stone-800 flex items-center gap-3">
+                <span class="flex items-center gap-1"><span class="w-2.5 h-0.5 bg-emerald-400"></span> 兩點 UTL</span>
+                <span class="flex items-center gap-1"><span class="w-2.5 h-0.5 bg-blue-400"></span> 阻力翻轉支撐</span>
+                <span class="flex items-center gap-1"><span class="w-2.5 h-0.5 bg-purple-400"></span> 20MA 均線</span>
+                <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-400"></span> M.E.T.A. 共振點</span>
+              </div>
+            </div>
+
+            <!-- Deep Dive Tabs in Lab -->
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              <div class="p-4 rounded-xl card-theme-sub border space-y-2">
+                <h4 class="font-bold text-amber-900 flex items-center gap-1.5">
+                  <span>🪜</span> 什麼是「分層 M.E.T.A.」結構？(Tiered M.E.T.A.)
+                </h4>
+                <p class="text-stone-600">
+                  當股價突破後回調，可能存在多個結構深度：<br>
+                  • <strong>第一層淺回調：</strong>10MA + 第一級前浪頂翻轉支撐。<br>
+                  • <strong>第二層深結構：</strong>若跌破第一層，在更具結構深度的 20MA/50MA + 第二級前浪頂 + 兩點 UTL 處精準承接（如 FSLR 經典案例），切忌在中間無支撐真空區急於接飛刀。
+                </p>
+              </div>
+
+              <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-950 space-y-2">
+                <h4 class="font-bold text-rose-900 flex items-center gap-1.5">
+                  <span>⚠️</span> 反直覺均線哲學：避開牛市「200MA 弱勢股陷阱」
+                </h4>
+                <p class="text-xs text-rose-800">
+                  散戶常以為「200MA 一定有神聖支撐」。J Law 指出：當標普 500 遠高於 200MA 處於大牛市時，一隻跌回自身 200MA 的股票本質上是被機構拋棄的市場落後者（Laggard），支撐極度脆弱！均線只有在強勢股首次回踩 10/20MA 且與橫向結構共振時才具備優勢。
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBTAB 3: 8 大 USIC 實戰奪冠戰役拆解 -->
+        <div id="jlaw-tab-cases" class="jlaw-subcontent hidden space-y-4">
+          <div class="card-theme rounded-xl p-5 border">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+              <div>
+                <h3 class="text-sm font-bold flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                  USIC 全球冠軍 8 大經典戰役復盤館 (2023 - 2024)
+                </h3>
+                <p class="text-xs text-stone-500">包含多頭 M.E.T.A.、VCP 緊湊突破、克服 FOMO 二次上車與買強沽弱對沖實戰</p>
+              </div>
+              <div class="text-xs text-stone-400 font-mono">點擊卡片查看詳細多重優勢 (Edges)</div>
+            </div>
+
+            <!-- Case Buttons Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+              <button onclick="renderJlawCase('PLTR')" id="case-btn-PLTR" class="px-3 py-2 rounded-lg text-xs font-bold border transition bg-amber-600 text-white border-amber-600">
+                ⭐ Palantir (PLTR)
+              </button>
+              <button onclick="renderJlawCase('SMCI')" id="case-btn-SMCI" class="px-3 py-2 rounded-lg text-xs font-bold border transition card-theme hover:bg-stone-100">
+                Super Micro (SMCI)
+              </button>
+              <button onclick="renderJlawCase('APP')" id="case-btn-APP" class="px-3 py-2 rounded-lg text-xs font-bold border transition card-theme hover:bg-stone-100">
+                AppLovin (APP)
+              </button>
+              <button onclick="renderJlawCase('OSCR')" id="case-btn-OSCR" class="px-3 py-2 rounded-lg text-xs font-bold border transition card-theme hover:bg-stone-100">
+                Oscar Health (OSCR)
+              </button>
+              <button onclick="renderJlawCase('NFLX')" id="case-btn-NFLX" class="px-3 py-2 rounded-lg text-xs font-bold border transition card-theme hover:bg-stone-100">
+                Netflix (NFLX >20R)
+              </button>
+              <button onclick="renderJlawCase('FSLR')" id="case-btn-FSLR" class="px-3 py-2 rounded-lg text-xs font-bold border transition card-theme hover:bg-stone-100">
+                First Solar (FSLR 分層)
+              </button>
+              <button onclick="renderJlawCase('GFI')" id="case-btn-GFI" class="px-3 py-2 rounded-lg text-xs font-bold border transition card-theme hover:bg-stone-100">
+                Gold Fields (GFI 雙底)
+              </button>
+              <button onclick="renderJlawCase('CAR')" id="case-btn-CAR" class="px-3 py-2 rounded-lg text-xs font-bold border transition card-theme hover:bg-stone-100 text-rose-600">
+                🔻 Avis (CAR 沽空 -28%)
+              </button>
+            </div>
+
+            <!-- Dynamic Case Detail Display Container -->
+            <div id="jlawCaseDetailContainer" class="p-5 rounded-xl card-theme-sub border space-y-4">
+              <!-- Rendered via JavaScript -->
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBTAB 4: 持貨系統、利潤墊與雙軌賣出 -->
+        <div id="jlaw-tab-sizing" class="jlaw-subcontent hidden space-y-6">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Sizing Engine: One-shot vs Pyramiding -->
+            <div class="card-theme rounded-xl p-5 border space-y-4">
+              <h3 class="text-sm font-bold flex items-center justify-between">
+                <span class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                  一步到位建倉 (One-Shot) vs 散戶分批追高
+                </h3>
+                <span class="text-xs text-stone-400 font-mono">成本線與心理壓力</span>
+              </h3>
+              <p class="text-xs text-stone-600">
+                傳統教人「分批逢高加碼」，但 J Law 實戰採用<strong>在精確 M.E.T.A. 點一次性建滿預定倉位</strong>。因為在低位鎖定成本後，價格脫離成本區即有豐厚利潤墊；若分批加碼，成本迅速拉高，正常回調時帳面利潤瞬間蒸發，迫使你在黎明前恐慌止損。
+              </p>
+
+              <!-- Interactive Simulator -->
+              <div class="p-4 rounded-xl bg-stone-50 border border-stone-200 space-y-3 text-xs">
+                <div class="font-bold text-stone-700">模擬正常波段回調洗盤 (-5%) 時的心理承受度：</div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="p-3 rounded-lg bg-emerald-50 border border-emerald-200">
+                    <div class="font-bold text-emerald-900 mb-1">J Law: 一步到位建倉</div>
+                    <div class="text-[11px] text-emerald-800 space-y-0.5">
+                      <div>進場成本：<strong>$100</strong> (100% 倉位)</div>
+                      <div>漲至 $115 後回調至 $109 (-5.2%)</div>
+                      <div class="mt-1 pt-1 border-t border-emerald-200 text-emerald-900 font-bold">
+                        現狀：仍盈利 +9%！內心極度安穩，輕鬆抱牢大牛股。
+                      </div>
+                    </div>
+                  </div>
+                  <div class="p-3 rounded-lg bg-rose-50 border border-rose-200">
+                    <div class="font-bold text-rose-900 mb-1">散戶：分批追高加碼</div>
+                    <div class="text-[11px] text-rose-800 space-y-0.5">
+                      <div>加碼後平均成本：<strong>$111</strong></div>
+                      <div>回調至 $109 時 (-5.2%)</div>
+                      <div class="mt-1 pt-1 border-t border-rose-200 text-rose-900 font-bold">
+                        現狀：帳面轉虧 -1.8%！心理崩潰，被正常洗盤震出局。
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-[11px] text-stone-500 italic">
+                  * 若要加碼，必須採「倒金字塔遞減加碼」，加碼注碼必須遠小於底倉，絕不可拉高平均成本。
+                </div>
+              </div>
+
+              <!-- 利潤墊機制 -->
+              <div class="p-4 rounded-xl bg-amber-50/70 border border-amber-200 text-xs space-y-2">
+                <div class="font-bold text-amber-900 flex items-center gap-1.5">
+                  <span>🛡️</span> 冠軍注碼心法：用利潤承擔風險 (Finance Risk with Profit)
+                </div>
+                <p class="text-amber-800">
+                  年初無利潤時，採取極小注碼（0.3%~0.5% 回撤）防守；一旦累積了已鎖定利潤，將該筆利潤作為「新交易的止損緩衝（Profit Cushion）」，像操作 PLTR 一樣重倉加碼全壘打，<strong>即便止損也只賠掉市場送的利潤，本金始終零風險</strong>！
+                </p>
+              </div>
+            </div>
+
+            <!-- Double-Track Exit System -->
+            <div class="card-theme rounded-xl p-5 border space-y-4">
+              <h3 class="text-sm font-bold flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                雙軌賣出系統：趁強賣出 vs 趁弱賣出
+              </h3>
+              <p class="text-xs text-stone-600">
+                散戶常在「太早賣飛」與「抱上去又跌下來坐過山車」之間痛苦徘徊。J Law 將出場系統嚴密劃分為兩種流派：
+              </p>
+
+              <div class="space-y-3 text-xs">
+                <div class="p-3.5 rounded-xl card-theme-sub border space-y-1.5">
+                  <div class="flex items-center justify-between">
+                    <strong class="text-amber-900 font-bold">1. 趁強賣出 (Sell Into Strength)</strong>
+                    <span class="text-[10px] px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-mono">逢高主動鎖定</span>
+                  </div>
+                  <p class="text-stone-600 text-[11px]">
+                    <strong>觸發條件：</strong>股價觸及「2+1」平行通道上沿 TRL、週線密集大阻力、散戶極度貪婪（90% 做多）、或爆量天量長上影線。<br>
+                    <strong>優勢與代價：</strong>能迅速鎖定實質利潤、建立「利潤軟墊」；但可能錯失超級大牛股後續主升浪。
+                  </p>
+                </div>
+
+                <div class="p-3.5 rounded-xl card-theme-sub border space-y-1.5">
+                  <div class="flex items-center justify-between">
+                    <strong class="text-emerald-900 font-bold">2. 趁弱賣出 (Sell Into Weakness)</strong>
+                    <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono">移動止盈長坐</span>
+                  </div>
+                  <p class="text-stone-600 text-[11px]">
+                    <strong>觸發條件：</strong>不預設漲幅天花板，以 10MA 或 20MA 作為動態 Trailing Stop，收盤不破均線絕不賣出，收盤明確跌破才全數離場。<br>
+                    <strong>優勢與代價：</strong>（Judy Lai 冠軍核心）完整捕捉翻倍甚至數倍大趨勢；但必須忍受趨勢末端較大幅度的利潤回吐。
+                  </p>
+                </div>
+              </div>
+
+              <div class="p-3 rounded-lg bg-stone-100 border text-stone-700 text-xs">
+                💡 <strong>新手與進階者的抉擇：</strong>尚未具備頂級盤感前，堅定執行單一的「趁弱賣出」規則，其長期期望值與一致性往往超越複雜的人性主觀判斷！
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SUBTAB 5: MRA 賽後檢討與 18 條贏家守則 -->
+        <div id="jlaw-tab-mra" class="jlaw-subcontent hidden space-y-6">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Left: MRA & Routine -->
+            <div class="space-y-6">
+              <!-- Weekend Routine -->
+              <div class="card-theme rounded-xl p-5 border space-y-3 text-xs">
+                <h3 class="text-sm font-bold text-amber-900 flex items-center gap-1.5">
+                  <span>📅</span> 週末四大核心預案：真正賺錢在週末
+                </h3>
+                <p class="text-stone-500 text-[11px]">散戶總在盤中腎上腺素飆升時臨時決策，專業交易員則在週末完成 90% 的工作：</p>
+                <div class="space-y-2">
+                  <div class="p-2 rounded bg-stone-50 border text-stone-700">
+                    <strong>1. 檢視現有持倉：</strong>檢查持倉過去一週價量結構與均線健康度。
+                  </div>
+                  <div class="p-2 rounded bg-stone-50 border text-stone-700">
+                    <strong>2. 量化篩選與板塊聯動：</strong>鎖定相對強度 (RS) 最強且放量的產業領先龍頭。
+                  </div>
+                  <div class="p-2 rounded bg-stone-50 border text-stone-700">
+                    <strong>3. 大盤環境定調：</strong>確立下週策略（做多、做空、或多空對沖）。
+                  </div>
+                  <div class="p-2 rounded bg-stone-50 border text-stone-700">
+                    <strong>4. 制定目標股交易計畫：</strong>明確寫下觸發價、止損價、目標位並預埋價格警報。
+                  </div>
+                </div>
+              </div>
+
+              <!-- Slump Reset -->
+              <div class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-xs space-y-2.5">
+                <h3 class="font-bold text-rose-900 flex items-center justify-between">
+                  <span>🧹 低谷期「清倉重置」機制</span>
+                  <button onclick="activateSlumpReset()" class="px-2 py-0.5 rounded bg-rose-600 text-white text-[10px] hover:bg-rose-700">一鍵啟動 0.15% 模式</button>
+                </h3>
+                <p class="text-rose-800 text-[11px]">
+                  當連續止損、交易狀態極差時：<br>
+                  ① <strong>立即清倉離場 (All-Cash Reset)：</strong>倉位與情感徹底歸零，切斷急於翻本（Revenge Trading）的惡性循環。<br>
+                  ② <strong>單筆風險減半至 0.15%：</strong>以極微小敞口重新尋找節奏，心理毫無壓力。<br>
+                  ③ <strong>必要時徹底休息：</strong>有時候不做交易就是最好的交易！
+                </p>
+              </div>
+            </div>
+
+            <!-- Right 2 Cols: 18 Rules Matrix -->
+            <div class="lg:col-span-2 card-theme rounded-xl p-5 border space-y-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-sm font-bold flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                    J Law《18 個買賣股票贏家守則》全解析
+                  </h3>
+                  <p class="text-xs text-stone-500">交易員的「最高憲法」，點擊守則可隨時檢視違規狀況</p>
+                </div>
+                <span class="text-xs font-mono text-stone-400">4大核心維度</span>
+              </div>
+
+              <!-- Category 1: 本金保護 -->
+              <div class="space-y-2">
+                <div class="text-xs font-bold text-rose-700 flex items-center gap-1.5 border-b pb-1">
+                  <span>🛡️</span> 一、絕對本金保護與風險預算維度 (消除左尾破產風險)
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                  <div class="p-2.5 rounded-lg card-theme-sub border">
+                    <strong class="text-stone-800">守則 1：</strong>每一個交易必須設置停損點。
+                  </div>
+                  <div class="p-2.5 rounded-lg card-theme-sub border">
+                    <strong class="text-stone-800">守則 2：</strong>單筆最大虧損率絕不高於平均獲利率。
+                  </div>
+                  <div class="p-2.5 rounded-lg card-theme-sub border">
+                    <strong class="text-stone-800">守則 3：</strong>永遠不要向下攤平 (Never Averaging Down)。
+                  </div>
+                  <div class="p-2.5 rounded-lg card-theme-sub border">
+                    <strong class="text-stone-800">守則 5：</strong>不要讓豐厚的利潤變成虧損 (保本止損)。
+                  </div>
+                  <div class="p-2.5 rounded-lg card-theme-sub border">
+                    <strong class="text-stone-800">守則 6：</strong>錯失 10 個機會無礙，犯 1 個重大錯誤足以致命。
+                  </div>
+                  <div class="p-2.5 rounded-lg card-theme-sub border">
+                    <strong class="text-stone-800">守則 12：</strong>小心使用槓桿，槓桿能令你 K.O. 式失敗。
+                  </div>
+                </div>
+              </div>
+
+              <!-- Category 2: 概率期望值 -->
+              <div class="space-y-2">
+                <div class="text-xs font-bold text-blue-700 flex items-center gap-1.5 border-b pb-1">
+                  <span>📈</span> 二、概率思維與期望值管理維度 (盈虧比大於 2:1)
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                  <div class="p-2.5 rounded-lg card-theme-sub border">
+                    <strong class="text-stone-800">守則 7：</strong>每日檢視持倉，時刻以風險回報角度思考。
+                  </div>
+                  <div class="p-2.5 rounded-lg card-theme-sub border">
+                    <strong class="text-stone-800">守則 15：</strong>你不會永遠正確，必須接受必定會虧損。
+                  </div>
+                  <div class="p-2.5 rounded-lg card-theme-sub border">
+                    <strong class="text-stone-800">守則 16：</strong>勝率即使低於 50%，做好風控長期依然大賺！
+                  </div>
+                  <div class="p-2.5 rounded-lg card-theme-sub border">
+                    <strong class="text-stone-800">守則 17：</strong>管理好盈虧比，回報風險比經常維持高於 2:1。
+                  </div>
+                </div>
+              </div>
+
+              <!-- Category 3: 強勢動能選股 -->
+              <div class="space-y-2">
+                <div class="text-xs font-bold text-emerald-700 flex items-center gap-1.5 border-b pb-1">
+                  <span>🚀</span> 三、強勢動能選股與順勢操作維度 (領頭羊原則)
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                  <div class="p-2.5 rounded-lg card-theme-sub border">
+                    <strong class="text-stone-800">守則 10：</strong>盡量在強勢板塊中篩選最強勢股票去買入。
+                  </div>
+                  <div class="p-2.5 rounded-lg card-theme-sub border">
+                    <strong class="text-stone-800">守則 11：</strong>嚴禁聽消息、傳媒或買入低價老千股。
+                  </div>
+                  <div class="p-2.5 rounded-lg card-theme-sub border">
+                    <strong class="text-stone-800">守則 13：</strong>做多創新高的股票，做空創新低的股票。
+                  </div>
+                  <div class="p-2.5 rounded-lg card-theme-sub border">
+                    <strong class="text-stone-800">守則 14：</strong>市場永遠不會錯，但個人主觀看法經常錯。
+                  </div>
+                </div>
+              </div>
+
+              <!-- Category 4: 進出場紀律 -->
+              <div class="space-y-2">
+                <div class="text-xs font-bold text-amber-700 flex items-center gap-1.5 border-b pb-1">
+                  <span>🎯</span> 四、進出場執行與一致性紀律維度
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                  <div class="p-2.5 rounded-lg card-theme-sub border">
+                    <strong class="text-stone-800">守則 4：</strong>不要過度分析而不敢行動。
+                  </div>
+                  <div class="p-2.5 rounded-lg card-theme-sub border">
+                    <strong class="text-stone-800">守則 8：</strong>絕不在高於突破點 5% 以上追入股票！
+                  </div>
+                  <div class="p-2.5 rounded-lg card-theme-sub border">
+                    <strong class="text-stone-800">守則 9：</strong>不要追求賣在最高點，依靠系統一致性。
+                  </div>
+                  <div class="p-2.5 rounded-lg card-theme-sub border">
+                    <strong class="text-stone-800">守則 18：</strong>遵守交易紀律，保持交易原則始終如一。
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- MODULE 1: 循序漸進學習區 (LEVEL 1 ~ 5) -->
+      <!-- ========================================================================= -->
+      <section id="module-learn" class="module-view hidden space-y-6">
+        
+        <!-- Level Nav Tabs -->
+        <div class="flex items-center justify-between border-b pb-3" style="border-color: var(--border-color);">
+          <div>
+            <h2 class="text-lg font-bold tracking-tight">📚 循序漸進學習地圖</h2>
+            <p class="text-xs text-stone-500">從基礎概念、K 線微觀解剖、技術指標，到 8 大經典實戰策略</p>
+          </div>
+          <div class="flex items-center space-x-1 overflow-x-auto text-xs">
+            <button onclick="switchLearnLevel(1)" id="btn-lvl-1" class="tab-btn px-3 py-1.5 rounded-lg active">Lv1 交易基礎</button>
+            <button onclick="switchLearnLevel(2)" id="btn-lvl-2" class="tab-btn px-3 py-1.5 rounded-lg card-theme">Lv2 K線解讀</button>
+            <button onclick="switchLearnLevel(3)" id="btn-lvl-3" class="tab-btn px-3 py-1.5 rounded-lg card-theme">Lv3 技術指標</button>
+            <button onclick="switchLearnLevel(4)" id="btn-lvl-4" class="tab-btn px-3 py-1.5 rounded-lg card-theme">Lv4 指數與宏觀</button>
+            <button onclick="switchLearnLevel(5)" id="btn-lvl-5" class="tab-btn px-3 py-1.5 rounded-lg card-theme text-amber-700 font-bold">Lv5 實戰策略庫</button>
+          </div>
+        </div>
+
+        <!-- LEVEL 1: 基礎概念與風控 -->
+        <div id="learn-level-1" class="learn-level-content space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Card 1: 支撐與阻力互換 -->
+            <div class="card-theme rounded-xl p-5 border space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                  支撐與阻力互換原理 (Support/Resistance Flip)
+                </h3>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-stone-100 text-stone-500 font-mono">核心基石</span>
+              </div>
+              <p class="text-xs text-stone-600">
+                原本壓制股價的橫向阻力位，一旦被帶量突破後，先前的空頭止損轉為多頭、原本觀望的買盤在此排隊，使得該水平線在市場心理上轉變為<strong>強大支撐區</strong>。
+              </p>
+              <!-- Interactive Diagram -->
+              <div class="p-3 rounded-lg bg-stone-900 border border-stone-800 text-center font-mono text-[11px] text-stone-300">
+                <div class="text-amber-400 font-bold mb-1">【突破回踩模型】</div>
+                <div class="flex items-center justify-center space-x-2 text-[10px]">
+                  <span>盤整受阻</span> ➔ <span class="text-emerald-400 font-bold">巨量突破</span> ➔ <span class="text-cyan-400">縮量回踩原阻力</span> ➔ <span class="text-emerald-400 font-bold">確認企穩起飛</span>
+                </div>
+              </div>
+              <div class="text-[11px] text-stone-500">
+                🎯 <strong>實戰口訣：</strong>「突破不追高，等待縮量回踩頸線企穩再出手。」
+              </div>
+            </div>
+
+            <!-- Card 2: 盈虧比與期望值 -->
+            <div class="card-theme rounded-xl p-5 border space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  盈虧比 (Risk/Reward) 與最低勝率計算機
+                </h3>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono">數學期望值</span>
+              </div>
+              <p class="text-xs text-stone-600">
+                交易不是比誰看的準，而是比誰在賺錢時賺得多、賠錢時賠得少。只要盈虧比維持在 2:1 以上，哪怕勝率只有 40%，長期下來依然大賺！
+              </p>
+              <div class="p-3.5 rounded-xl card-theme-sub border space-y-2 text-xs">
+                <div class="flex items-center justify-between">
+                  <span>目標盈虧比 (R-Multiple)：</span>
+                  <select id="calcRR" onchange="calculateBreakevenWinrate()" class="px-2 py-1 rounded border bg-white font-mono font-bold">
+                    <option value="1.5">1.5 : 1</option>
+                    <option value="2.0" selected>2.0 : 1 (推薦)</option>
+                    <option value="3.0">3.0 : 1 (強烈推薦)</option>
+                    <option value="5.0">5.0 : 1 (波段全壘打)</option>
+                  </select>
+                </div>
+                <div class="flex items-center justify-between pt-1 border-t">
+                  <span class="text-stone-500">損益兩平最低勝率：</span>
+                  <span class="font-mono font-bold text-emerald-600 text-sm" id="calcBreakevenWinrate">33.3%</span>
+                </div>
+              </div>
+              <div class="text-[11px] text-stone-500">
+                🎯 <strong>實戰口訣：</strong>「做單前先看盈虧比，若低於 2:1 哪怕技術形態再美也放棄。」
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LEVEL 2: K 線微觀解讀與組合 (含自填 K 線解剖實驗室) -->
+        <div id="learn-level-2" class="learn-level-content hidden space-y-6">
+          
+          <!-- K 線解剖實驗室 (自填真實價格) -->
+          <div class="card-theme rounded-xl p-5 border space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h3 class="text-sm font-bold flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                  🔬 K 線微觀解剖實驗室 (支援輸入真實股價)
+                </h3>
+                <p class="text-xs text-stone-500">輸入美股、港股或韓股真實高/收/開/低數值，系統自動等比縮放並診斷多空力量</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="setSampleCandle('hammer')" class="px-2.5 py-1 rounded text-xs border hover:bg-stone-100">錘子線範例</button>
+                <button onclick="setSampleCandle('shooting')" class="px-2.5 py-1 rounded text-xs border hover:bg-stone-100">射擊之星範例</button>
+                <button onclick="setSampleCandle('marubozu')" class="px-2.5 py-1 rounded text-xs border hover:bg-stone-100">大陽推進範例</button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+              <!-- Left: Canvas -->
+              <div class="lg:col-span-5 bg-stone-900 rounded-xl p-4 flex flex-col items-center justify-center border border-stone-800" style="min-height: 280px;">
+                <canvas id="candleLabCanvas" width="220" height="240" class="mx-auto"></canvas>
+                <div class="mt-2 text-center text-xs font-mono" id="candleLabMetrics">
+                  <!-- Generated via JS -->
+                </div>
+              </div>
+
+              <!-- Right: 4 Inputs & Sliders -->
+              <div class="lg:col-span-7 space-y-3 text-xs">
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-stone-500 font-medium mb-1">最高價 (High)：</label>
+                    <input type="number" step="any" id="labHigh" oninput="updateCandleLabFromInputs()" class="w-full px-3 py-1.5 rounded-lg border font-mono font-bold focus:ring-1 focus:ring-emerald-500" value="138.50">
+                  </div>
+                  <div>
+                    <label class="block text-stone-500 font-medium mb-1">收盤價 (Close)：</label>
+                    <input type="number" step="any" id="labClose" oninput="updateCandleLabFromInputs()" class="w-full px-3 py-1.5 rounded-lg border font-mono font-bold focus:ring-1 focus:ring-emerald-500" value="136.20">
+                  </div>
+                  <div>
+                    <label class="block text-stone-500 font-medium mb-1">開盤價 (Open)：</label>
+                    <input type="number" step="any" id="labOpen" oninput="updateCandleLabFromInputs()" class="w-full px-3 py-1.5 rounded-lg border font-mono font-bold focus:ring-1 focus:ring-emerald-500" value="131.00">
+                  </div>
+                  <div>
+                    <label class="block text-stone-500 font-medium mb-1">最低價 (Low)：</label>
+                    <input type="number" step="any" id="labLow" oninput="updateCandleLabFromInputs()" class="w-full px-3 py-1.5 rounded-lg border font-mono font-bold focus:ring-1 focus:ring-emerald-500" value="130.50">
+                  </div>
+                </div>
+
+                <!-- Diagnosis Box -->
+                <div class="p-3.5 rounded-xl card-theme-sub border space-y-1.5">
+                  <div class="font-bold flex items-center justify-between">
+                    <span id="labCandleName" class="text-emerald-700">看漲實體線</span>
+                    <span id="labCandleType" class="text-[10px] px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono">綠陽 K</span>
+                  </div>
+                  <p class="text-stone-600 text-[11px]" id="labCandleMeaning">
+                    多頭掌控全天走勢，收盤逼近最高點，顯示強烈買盤推進動能。
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 12 大型態視覺圖鑑列表 -->
+          <div class="card-theme rounded-xl p-5 border space-y-4">
+            <h3 class="text-sm font-bold flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+              經典 K 線型態圖鑑
+            </h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs" id="candlePatternGrid">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- LEVEL 3: 常見技術指標 -->
+        <div id="learn-level-3" class="learn-level-content hidden space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- MA & EMA -->
+            <div class="card-theme rounded-xl p-5 border space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                  移動平均線系統 (MA / EMA)
+                </h3>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-purple-100 text-purple-800 font-mono">趨勢之母</span>
+              </div>
+              <p class="text-xs text-stone-600">
+                • <strong>10MA / 20EMA：</strong>短線動能生命線，強勢股拉回不破。<br>
+                • <strong>50MA：</strong>機構操盤季線基準，Stage 2 關鍵防線。<br>
+                • <strong>200MA：</strong>長期牛熊分界線。
+              </p>
+              <div class="p-3 rounded-lg bg-stone-50 border text-xs text-stone-600">
+                🎯 <strong>黃金均線排列：</strong>股價 &gt; 10MA &gt; 20MA &gt; 50MA &gt; 200MA 且均線上揚，為最佳多頭持倉環境。
+              </div>
+            </div>
+
+            <!-- 布林帶 -->
+            <div class="card-theme rounded-xl p-5 border space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                  布林通道 (Bollinger Bands)
+                </h3>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-mono">波動率通道</span>
+              </div>
+              <p class="text-xs text-stone-600">
+                由中軌（20MA）及上下各 2 個標準差構成。95% 的價格波動落在帶內。<br>
+                • <strong>收口（Squeeze）：</strong>波動率極度壓縮，預告即將出現大級別單邊突破！<br>
+                • <strong>開口爆破：</strong>放量緊貼上軌推進為極強趨勢。
+              </p>
+              <div class="p-3 rounded-lg bg-stone-50 border text-xs text-stone-600">
+                🎯 <strong>實戰口訣：</strong>「縮得越緊，噴得越猛；突破收口做順勢。」
+              </div>
+            </div>
+
+            <!-- RSI & 背離 -->
+            <div class="card-theme rounded-xl p-5 border space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  RSI 相對強弱指標與背離法
+                </h3>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono">動能震盪</span>
+              </div>
+              <p class="text-xs text-stone-600">
+                • <strong>超買超賣：</strong>&gt;70 超買、&lt;30 超賣（強趨勢中會鈍化）。<br>
+                • <strong>底背離 (Bullish Divergence)：</strong>股價破新低，RSI 卻一底比一底高，預告空頭動能衰竭！
+              </p>
+              <div class="p-3 rounded-lg bg-stone-50 border text-xs text-stone-600">
+                🎯 <strong>警報：</strong>強勢牛市切忌逢 70 就做空，背離必須搭配 K 線右側確認。
+              </div>
+            </div>
+
+            <!-- VWAP & Volume Profile -->
+            <div class="card-theme rounded-xl p-5 border space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                  VWAP 與 Volume Profile 籌碼峰
+                </h3>
+                <span class="text-[10px] px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-mono">機構量價</span>
+              </div>
+              <p class="text-xs text-stone-600">
+                • <strong>VWAP：</strong>成交量加權平均價，美股日內與波段機構買盤核心基準。<br>
+                • <strong>POC (Point of Control)：</strong>橫向籌碼分佈中成交量最密集的價位，具有極大引力與強支撐阻力。
+              </p>
+              <div class="p-3 rounded-lg bg-stone-50 border text-xs text-stone-600">
+                🎯 <strong>原則：</strong>股價在 VWAP 之上只做多，跌破 VWAP 絕不抄底。
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- LEVEL 4: 全球指數與宏觀環境 -->
+        <div id="learn-level-4" class="learn-level-content hidden space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            
+            <!-- 美股三大指數 -->
+            <div class="card-theme rounded-xl p-4 border space-y-2 text-xs">
+              <div class="font-bold text-stone-800 flex items-center justify-between">
+                <span>🇺🇸 美股三大核心指數</span>
+                <span class="font-mono text-[10px] text-stone-400">US Indices</span>
+              </div>
+              <div class="space-y-1.5 text-stone-600">
+                <div>• <strong>標普 500 (SPX)：</strong>全球機構權益資產錨定標的。</div>
+                <div>• <strong>納指 100 (NDX)：</strong>科技動能與成長股風向標。</div>
+                <div>• <strong>費半 (SOX)：</strong>全球半導體與 AI 景氣先行指標。</div>
+              </div>
+            </div>
+
+            <!-- 港股與亞洲 -->
+            <div class="card-theme rounded-xl p-4 border space-y-2 text-xs">
+              <div class="font-bold text-stone-800 flex items-center justify-between">
+                <span>🇭🇰 港股 & 🇰🇷 韓股</span>
+                <span class="font-mono text-[10px] text-stone-400">Asia Focus</span>
+              </div>
+              <div class="space-y-1.5 text-stone-600">
+                <div>• <strong>恆生科指 (HSTECH)：</strong>受美元流動性與南向北水影響極大。</div>
+                <div>• <strong>韓股 KOSPI：</strong>以三星與 SK海力士為核心，與美股 SOX 費半高度正相關。</div>
+                <div>• <strong>USD/KRW 韓元匯率：</strong>韓元升值通常伴隨外資大幅回流買超晶片股。</div>
+              </div>
+            </div>
+
+            <!-- 情緒與宏觀風向 -->
+            <div class="card-theme rounded-xl p-4 border space-y-2 text-xs">
+              <div class="font-bold text-stone-800 flex items-center justify-between">
+                <span>🌐 宏觀與情緒晴雨表</span>
+                <span class="font-mono text-[10px] text-stone-400">Macro Signals</span>
+              </div>
+              <div class="space-y-1.5 text-stone-600">
+                <div>• <strong>VIX 恐慌指數：</strong>&gt;25 警戒，&gt;35 進入恐慌撿黃金區。</div>
+                <div>• <strong>DXY 美元指數：</strong>美元強則新興市場與港股承壓。</div>
+                <div>• <strong>10年期美債殖利率 (US10Y)：</strong>無風險利率飆升會直接壓低科技成長股估值。</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- LEVEL 5: 8 大經典實戰交易策略庫 -->
+        <div id="learn-level-5" class="learn-level-content hidden space-y-6">
+          <div class="flex items-center justify-between">
+            <p class="text-xs text-stone-500">不只教單一指標，而是將指標、K 線、進出場與止損封裝成完整劇本：</p>
+            <span class="text-xs font-mono text-stone-400">8 套實戰劇本</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="strategiesGrid">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- MODULE 2: 速查圖鑑與抽考閃卡 (44+ CARDS) -->
+      <!-- ========================================================================= -->
+      <section id="module-wiki" class="module-view hidden space-y-6">
+        
+        <!-- Search & Filter Bar -->
+        <div class="card-theme rounded-xl p-4 border flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div class="flex-1 relative">
+            <input type="text" id="wikiSearchInput" oninput="filterWikiCards()" placeholder="搜尋技術形態、指標、J Law 體系關鍵字..." class="w-full pl-9 pr-4 py-2 rounded-lg border text-xs focus:ring-1 focus:ring-stone-400 bg-transparent" style="border-color: var(--border-color);">
+            <svg class="w-4 h-4 text-stone-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+
+          <!-- Tags -->
+          <div class="flex flex-wrap items-center gap-1.5 text-xs">
+            <button onclick="setWikiFilter('ALL')" class="wiki-tag-btn px-2.5 py-1 rounded-lg border font-medium active bg-stone-800 text-white">全部</button>
+            <button onclick="setWikiFilter('JLAW')" class="wiki-tag-btn px-2.5 py-1 rounded-lg border font-medium bg-amber-50 text-amber-800 border-amber-300">🏆 J Law 冠軍</button>
+            <button onclick="setWikiFilter('KLINE')" class="wiki-tag-btn px-2.5 py-1 rounded-lg border font-medium">K 線型態</button>
+            <button onclick="setWikiFilter('INDICATOR')" class="wiki-tag-btn px-2.5 py-1 rounded-lg border font-medium">技術指標</button>
+            <button onclick="setWikiFilter('PATTERN')" class="wiki-tag-btn px-2.5 py-1 rounded-lg border font-medium">價格型態</button>
+            <button onclick="setWikiFilter('MACRO')" class="wiki-tag-btn px-2.5 py-1 rounded-lg border font-medium">宏觀與指數</button>
+            <button onclick="setWikiFilter('BOOKMARK')" class="wiki-tag-btn px-2.5 py-1 rounded-lg border font-medium text-amber-600">⭐ 我的收藏</button>
+          </div>
+        </div>
+
+        <!-- Mode Toggle: Wiki Grid vs Flashcards -->
+        <div class="flex items-center justify-between">
+          <div class="text-xs text-stone-500 font-medium">
+            共找到 <span id="wikiCardFilteredCount" class="font-bold text-stone-800">0</span> 張知識卡片
+          </div>
+          <div class="flex items-center space-x-2 text-xs">
+            <button onclick="toggleWikiMode('grid')" id="btn-wiki-grid" class="px-3 py-1 rounded border active font-medium bg-stone-800 text-white">📖 圖鑑模式</button>
+            <button onclick="toggleWikiMode('flashcard')" id="btn-wiki-flashcard" class="px-3 py-1 rounded border font-medium card-theme">🎴 抽考閃卡模式</button>
+          </div>
+        </div>
+
+        <!-- Container -->
+        <div id="wikiCardsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Populated via JS -->
+        </div>
+
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- MODULE 3: 每日覆盤與檢討工作台 (巨人傑「交易即工作」× J LAW 風控) -->
+      <!-- ========================================================================= -->
+      <section id="module-review" class="module-view hidden space-y-6">
+        
+        <!-- TOP: 巨人傑考勤打卡 & 百圖基本功 & 熔斷警報 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- Shift Clock-In -->
+          <div class="lg:col-span-5 card-theme rounded-xl p-5 border space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                巨人傑職人考勤：今日三班打卡
+              </h3>
+              <span class="text-xs font-mono font-bold text-amber-700" id="reviewStreakDisplay">🔥 連續 0 天</span>
+            </div>
+            <p class="text-xs text-stone-500">交易即工作，打卡代表按 SOP 嚴格履行職責：</p>
+            <div class="space-y-2 text-xs">
+              <label class="flex items-center gap-2.5 p-2 rounded-lg card-theme-sub border cursor-pointer hover:bg-stone-100">
+                <input type="checkbox" id="shiftPre" onchange="checkShiftRoutine()" class="rounded text-amber-600 focus:ring-0">
+                <span><strong>🌅 盤前備戰班：</strong>審視大盤期貨、更新觀察名單、確認今日財報避雷。</span>
+              </label>
+              <label class="flex items-center gap-2.5 p-2 rounded-lg card-theme-sub border cursor-pointer hover:bg-stone-100">
+                <input type="checkbox" id="shiftDuring" onchange="checkShiftRoutine()" class="rounded text-amber-600 focus:ring-0">
+                <span><strong>⚡ 盤中執行班：</strong>只執行預設觸發單，嚴禁盤中即興追漲，下單即掛止損。</span>
+              </label>
+              <label class="flex items-center gap-2.5 p-2 rounded-lg card-theme-sub border cursor-pointer hover:bg-stone-100">
+                <input type="checkbox" id="shiftPost" onchange="checkShiftRoutine()" class="rounded text-amber-600 focus:ring-0">
+                <span><strong>🌙 盤後覆盤班：</strong>寫入 MRA 檢討日誌、歸類 2×2 品質矩陣、確認未破熔斷。</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Chart Counter & Circuit Breaker -->
+          <div class="lg:col-span-7 card-theme rounded-xl p-5 border flex flex-col justify-between space-y-4">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                  百圖千錘：今日看圖基本功
+                </h3>
+                <span class="text-xs font-mono text-stone-500">目標：50 張 / 日</span>
+              </div>
+              <div class="w-full bg-stone-100 rounded-full h-2.5 overflow-hidden">
+                <div id="chartCounterBar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%;"></div>
+              </div>
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-stone-500">今日已深研圖表：<strong id="chartCounterValue" class="font-mono text-stone-800 text-sm">0</strong> / 50 張</span>
+                <div class="space-x-1.5">
+                  <button onclick="addChartCount(1)" class="px-2 py-1 rounded border text-xs hover:bg-stone-100">+1</button>
+                  <button onclick="addChartCount(5)" class="px-2 py-1 rounded border text-xs hover:bg-stone-100">+5</button>
+                  <button onclick="addChartCount(10)" class="px-2 py-1 rounded border text-xs hover:bg-stone-100 font-bold text-blue-600">+10</button>
+                  <button onclick="resetChartCount()" class="px-2 py-1 rounded border text-xs text-stone-400 hover:text-stone-600">歸零</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lockout / Circuit Breaker Banner -->
+            <div id="circuitBreakerBanner" class="p-3 rounded-lg border text-xs flex items-center justify-between bg-stone-50 border-stone-200">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span>風控熔斷監控：當日未達 2R 止損上限，系統運作正常。</span>
+              </div>
+              <button onclick="triggerManualLockout()" class="px-2.5 py-1 rounded bg-stone-200 text-stone-700 hover:bg-stone-300 text-[11px] font-medium">主動停權下班</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SIZING ENGINE & 2x2 QA MATRIX -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- J Law 動態風險預算與利潤墊倉位計算機 -->
+          <div class="lg:col-span-7 card-theme rounded-xl p-5 border space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <h3 class="text-sm font-bold flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                  💰 J Law 動態風險預算與利潤墊 (Profit Cushion) 計算機
+                </h3>
+                <p class="text-xs text-stone-500">嚴格以風險倒推股數，單筆虧損鎖死在總帳戶 0.3%~0.5%</p>
+              </div>
+              <button onclick="applySizingToJournal()" class="text-xs px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200 font-medium">帶入下方覆盤表單 ↓</button>
+            </div>
+
+            <!-- Risk Mode Quick Toggles -->
+            <div class="flex items-center gap-1.5 text-xs">
+              <span class="text-stone-400 text-[11px]">風險檔位:</span>
+              <button onclick="setSizingRiskTier(0.15)" id="tier-btn-015" class="px-2.5 py-1 rounded border text-xs font-mono">🧹 0.15% 低谷重置</button>
+              <button onclick="setSizingRiskTier(0.30)" id="tier-btn-030" class="px-2.5 py-1 rounded border text-xs font-mono bg-amber-500 text-white font-bold border-amber-600">🛡️ 0.30% J Law 實盤</button>
+              <button onclick="setSizingRiskTier(0.50)" id="tier-btn-050" class="px-2.5 py-1 rounded border text-xs font-mono">0.50% 實盤上限</button>
+              <button onclick="setSizingRiskTier(1.00)" id="tier-btn-100" class="px-2.5 py-1 rounded border text-xs font-mono">1.00% 新手上限</button>
+            </div>
+
+            <!-- Inputs Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+              <div>
+                <label class="block text-stone-500 font-medium mb-1">帳戶總資金 ($)：</label>
+                <input type="number" id="calcAccountSize" oninput="runPositionSizer()" class="w-full px-2.5 py-1.5 rounded border font-mono font-bold" value="50000">
+              </div>
+              <div>
+                <label class="block text-stone-500 font-medium mb-1">風險比例 (%)：</label>
+                <input type="number" step="0.05" id="calcRiskPct" oninput="runPositionSizer()" class="w-full px-2.5 py-1.5 rounded border font-mono font-bold" value="0.30">
+              </div>
+              <div>
+                <label class="block text-stone-500 font-medium mb-1">預定進場價 ($)：</label>
+                <input type="number" step="any" id="calcEntryPrice" oninput="runPositionSizer()" class="w-full px-2.5 py-1.5 rounded border font-mono font-bold" value="135.00">
+              </div>
+              <div>
+                <label class="block text-stone-500 font-medium mb-1">嚴格止損價 ($)：</label>
+                <input type="number" step="any" id="calcStopPrice" oninput="runPositionSizer()" class="w-full px-2.5 py-1.5 rounded border font-mono font-bold" value="131.50">
+              </div>
+            </div>
+
+            <!-- Optional: Profit Cushion & Pivot Breakout Alert -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-2 border-t">
+              <div>
+                <label class="block text-stone-500 font-medium mb-1">已鎖定利潤墊 ($，選填)：</label>
+                <input type="number" id="calcProfitCushion" oninput="runPositionSizer()" placeholder="用利潤承擔額外風險" class="w-full px-2.5 py-1.5 rounded border font-mono text-stone-700" value="0">
+              </div>
+              <div>
+                <label class="block text-stone-500 font-medium mb-1">樞紐突破點 (Pivot $，選填)：</label>
+                <input type="number" step="any" id="calcPivotPrice" oninput="runPositionSizer()" placeholder="檢測守則8: +5% 追高警報" class="w-full px-2.5 py-1.5 rounded border font-mono text-stone-700" value="130.00">
+              </div>
+            </div>
+
+            <!-- +5% Chasing Warning Banner -->
+            <div id="chasingWarning" class="hidden p-2 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold flex items-center gap-2">
+              <span>⚠️ 違反 J Law 守則 8：</span>進場價高於 Pivot 突破點超過 5%！嚴禁追高，耐心等待 M.E.T.A. 回測！
+            </div>
+
+            <!-- Outputs Row -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 rounded-xl card-theme-sub border text-xs">
+              <div>
+                <span class="text-stone-500 block text-[11px]">最大允許虧損</span>
+                <span class="font-mono font-bold text-rose-600 text-sm" id="resMaxLoss">$150</span>
+              </div>
+              <div>
+                <span class="text-stone-500 block text-[11px]">建議買入股數</span>
+                <span class="font-mono font-bold text-stone-900 text-sm" id="resShareQty">42 股</span>
+              </div>
+              <div>
+                <span class="text-stone-500 block text-[11px]">動用總本金</span>
+                <span class="font-mono font-bold text-stone-700 text-sm" id="resTotalCapital">$5,670</span>
+              </div>
+              <div>
+                <span class="text-stone-500 block text-[11px]">2R 目標止盈價</span>
+                <span class="font-mono font-bold text-emerald-600 text-sm" id="resTargetPrice">$142.00</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2x2 QA 品管矩陣與勝率統計 -->
+          <div class="lg:col-span-5 card-theme rounded-xl p-5 border space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                工廠品管 QA：2×2 交易品質矩陣
+              </h3>
+              <span class="text-xs font-mono text-stone-400">巨人傑 × J Law</span>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <div class="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900">
+                <div class="flex items-center justify-between font-bold">
+                  <span>✅ 優質獲利</span>
+                  <span id="qaCountGoodWin" class="font-mono text-sm">0</span>
+                </div>
+                <div class="text-[10px] text-emerald-700 mt-0.5">符合 SOP + 達標止盈 (標準薪資)</div>
+              </div>
+
+              <div class="p-2.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-900">
+                <div class="flex items-center justify-between font-bold">
+                  <span>🛡️ 優質虧損</span>
+                  <span id="qaCountGoodLoss" class="font-mono text-sm">0</span>
+                </div>
+                <div class="text-[10px] text-blue-700 mt-0.5">符合 SOP + 紀律止損 (必要店租)</div>
+              </div>
+
+              <div class="p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900">
+                <div class="flex items-center justify-between font-bold">
+                  <span>☠️ 劣質獲利</span>
+                  <span id="qaCountBadWin" class="font-mono text-sm">0</span>
+                </div>
+                <div class="text-[10px] text-amber-700 mt-0.5">亂追僥倖賺 (毒藥，必檢討)</div>
+              </div>
+
+              <div class="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-900">
+                <div class="flex items-center justify-between font-bold">
+                  <span>💥 劣質虧損</span>
+                  <span id="qaCountBadLoss" class="font-mono text-sm">0</span>
+                </div>
+                <div class="text-[10px] text-rose-700 mt-0.5">違規扛單/重倉 (重大工安事故)</div>
+              </div>
+            </div>
+
+            <!-- QA Quality Score -->
+            <div class="p-3 rounded-lg card-theme-sub border flex items-center justify-between text-xs">
+              <div>
+                <span class="text-stone-500 block text-[11px]">SOP 工序執行良率 (QA Score)</span>
+                <span class="font-mono font-bold text-emerald-700 text-base" id="qaScoreDisplay">100%</span>
+              </div>
+              <div class="text-right">
+                <span class="text-stone-500 block text-[11px]">真實結案勝率</span>
+                <span class="font-mono font-bold text-stone-800 text-sm" id="realWinrateDisplay">--%</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- JOURNAL INPUT FORM & ENTRIES LIST -->
+        <div class="card-theme rounded-xl p-5 border space-y-5">
+          <div class="flex items-center justify-between border-b pb-3">
+            <div>
+              <h3 class="text-sm font-bold flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                新增 MRA 覆盤檢討日誌 (含 M.E.T.A. 6 因子計分)
+              </h3>
+              <p class="text-xs text-stone-500">記錄進場理由、技術共振優勢、大盤環境、心理狀態與圖表截圖</p>
+            </div>
+          </div>
+
+          <!-- Form Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+            <div>
+              <label class="block text-stone-500 font-medium mb-1">交易日期：</label>
+              <input type="date" id="jDate" class="w-full px-3 py-1.5 rounded border">
+            </div>
+            <div>
+              <label class="block text-stone-500 font-medium mb-1">標的代號 (Ticker)：</label>
+              <input type="text" id="jTicker" placeholder="例: NVDA, 0700.HK, 005930.KS" class="w-full px-3 py-1.5 rounded border font-mono font-bold uppercase">
+            </div>
+            <div>
+              <label class="block text-stone-500 font-medium mb-1">交易方向：</label>
+              <select id="jDirection" class="w-full px-3 py-1.5 rounded border font-medium">
+                <option value="LONG">🟢 做多 (LONG)</option>
+                <option value="SHORT">🔴 做空/對沖 (SHORT)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-stone-500 font-medium mb-1">所用策略劇本：</label>
+              <select id="jStrategy" class="w-full px-3 py-1.5 rounded border">
+                <option value="JLaw-META">🏆 J Law M.E.T.A. 多重優勢拉回</option>
+                <option value="JLaw-VCP">🏆 J Law VCP 緊湊樞紐突破</option>
+                <option value="MA20-Pullback">01. 均線回踩順勢策略</option>
+                <option value="Break-Retest">02. 支撐阻力突破回測</option>
+                <option value="BB-Squeeze">03. 布林收口爆破策略</option>
+                <option value="Divergence">04. 底背離反轉抄底</option>
+                <option value="Gap-Go">05. 跳空缺口不補強勢</option>
+                <option value="Range-Trade">06. 箱型區間高拋低吸</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- M.E.T.A. 6-Edge Checker -->
+          <div class="p-3.5 rounded-xl card-theme-sub border space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-amber-900 flex items-center gap-1.5">
+                <span>🎯</span> J Law M.E.T.A. 六大獨立優勢共振勾選器 (點擊自查)
+              </span>
+              <span class="font-mono text-[11px] px-2 py-0.5 rounded font-bold" id="metaEdgeScoreBadge" style="background-color: var(--border-color);">
+                0 / 6 優勢
+              </span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+              <label class="flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" class="meta-edge-check" onchange="updateMetaScore()" value="1">
+                <span>1. Stage 2 均線多頭排列</span>
+              </label>
+              <label class="flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" class="meta-edge-check" onchange="updateMetaScore()" value="2">
+                <span>2. 阻力翻轉支撐 (Flipping)</span>
+              </label>
+              <label class="flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" class="meta-edge-check" onchange="updateMetaScore()" value="3">
+                <span>3. 兩點 UTL 趨勢線支撐</span>
+              </label>
+              <label class="flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" class="meta-edge-check" onchange="updateMetaScore()" value="4">
+                <span>4. 關鍵均線 (10/20MA) 匯合</span>
+              </label>
+              <label class="flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" class="meta-edge-check" onchange="updateMetaScore()" value="5">
+                <span>5. 回調成交量極度萎縮</span>
+              </label>
+              <label class="flex items-center gap-1.5 cursor-pointer">
+                <input type="checkbox" class="meta-edge-check" onchange="updateMetaScore()" value="6">
+                <span>6. 避開首次急跌危險點</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Price & Risk Numbers -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div>
+              <label class="block text-stone-500 font-medium mb-1">進場價格：</label>
+              <input type="number" step="any" id="jEntry" class="w-full px-2.5 py-1.5 rounded border font-mono">
+            </div>
+            <div>
+              <label class="block text-stone-500 font-medium mb-1">止損價格：</label>
+              <input type="number" step="any" id="jStop" class="w-full px-2.5 py-1.5 rounded border font-mono text-rose-600">
+            </div>
+            <div>
+              <label class="block text-stone-500 font-medium mb-1">部位股數：</label>
+              <input type="number" id="jQty" class="w-full px-2.5 py-1.5 rounded border font-mono">
+            </div>
+            <div>
+              <label class="block text-stone-500 font-medium mb-1">結案平倉狀態：</label>
+              <select id="jStatus" class="w-full px-2.5 py-1.5 rounded border font-medium">
+                <option value="OPEN">⏳ 進行中 (Open)</option>
+                <option value="WIN">🎯 達標止盈 (優質獲利)</option>
+                <option value="LOSS">🛡️ 紀律止損 (優質虧損)</option>
+                <option value="BAD_WIN">☠️ 劣質獲利 (違規僥倖)</option>
+                <option value="BAD_LOSS">💥 劣質虧損 (違規扛單)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- MRA Context & Screenshots -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div>
+              <label class="block text-stone-500 font-medium mb-1">大盤環境 (Market Regime)：</label>
+              <select id="jRegime" class="w-full px-2.5 py-1.5 rounded border">
+                <option value="BULL">強勢牛市 (Position 長坐)</option>
+                <option value="CHOP">橫向震盪 (Swing 波段趁強賣)</option>
+                <option value="BEAR">下行趨勢 (防守/對沖)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-stone-500 font-medium mb-1">賣出系統類型：</label>
+              <select id="jExitType" class="w-full px-2.5 py-1.5 rounded border">
+                <option value="WEAKNESS">趁弱賣出 (跌破均線移動止盈)</option>
+                <option value="STRENGTH">趁強賣出 (通道頂/阻力主動分批)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-stone-500 font-medium mb-1">TradingView 截圖連結：</label>
+              <input type="url" id="jImgUrl" placeholder="https://www.tradingview.com/x/..." class="w-full px-2.5 py-1.5 rounded border">
+            </div>
+          </div>
+
+          <!-- Text Note -->
+          <div class="text-xs">
+            <label class="block text-stone-500 font-medium mb-1">MRA 賽後檢討筆記（技術依據與當下心態）：</label>
+            <textarea id="jNotes" rows="2" placeholder="詳細記錄：買進理由、盤中是否有衝動 FOMO 猶豫、結案教訓..." class="w-full px-3 py-2 rounded-lg border"></textarea>
+          </div>
+
+          <div class="flex justify-end">
+            <button onclick="saveJournalEntry()" class="px-5 py-2 rounded-lg text-xs font-bold text-white bg-stone-900 hover:bg-stone-800 transition flex items-center gap-1.5">
+              <span>💾 儲存並寫入覆盤資料庫</span>
+            </button>
+          </div>
+
+          <!-- History List Container -->
+          <div class="pt-4 border-t space-y-3">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-stone-700">歷史覆盤日誌紀錄</span>
+              <span id="journalCountBadge" class="font-mono text-stone-400">0 篇</span>
+            </div>
+            <div id="journalEntriesList" class="space-y-3">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- MODULE 4: 實時圖表與 API 沙盒 (TRADINGVIEW & DATA ENGINE) -->
+      <!-- ========================================================================= -->
+      <section id="module-sandbox" class="module-view hidden space-y-6">
+        
+        <div class="card-theme rounded-xl p-5 border space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-sm font-bold flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                實時行情與圖表沙盒 (支援美股、港股、韓股)
+              </h3>
+              <p class="text-xs text-stone-500">切換標的查看即時 K 線與走勢，支援嵌入式專業圖表</p>
+            </div>
+            <!-- Ticker Quick Select -->
+            <div class="flex items-center gap-1.5 text-xs">
+              <button onclick="changeSandboxTicker('NASDAQ:NVDA')" class="px-2.5 py-1 rounded border font-mono font-bold hover:bg-stone-100">NVDA</button>
+              <button onclick="changeSandboxTicker('NASDAQ:PLTR')" class="px-2.5 py-1 rounded border font-mono font-bold bg-amber-50 text-amber-800 border-amber-300">PLTR (JLaw)</button>
+              <button onclick="changeSandboxTicker('HKEX:700')" class="px-2.5 py-1 rounded border font-mono font-bold hover:bg-stone-100">0700 騰訊</button>
+              <button onclick="changeSandboxTicker('KRX:005930')" class="px-2.5 py-1 rounded border font-mono font-bold hover:bg-stone-100">005930 三星</button>
+              <button onclick="changeSandboxTicker('AMEX:SPY')" class="px-2.5 py-1 rounded border font-mono font-bold hover:bg-stone-100">SPY 標普</button>
+            </div>
+          </div>
+
+          <!-- TradingView Widget Container -->
+          <div class="rounded-xl overflow-hidden border border-stone-200" style="height: 520px;">
+            <div id="tradingview_widget_container" class="w-full h-full">
+              <!-- TV iframe inserted here -->
+            </div>
+          </div>
+
+          <!-- API Gateway Future Expansion Settings -->
+          <div class="p-4 rounded-xl card-theme-sub border text-xs space-y-3">
+            <div class="font-bold text-stone-700 flex items-center justify-between">
+              <span>🔌 數據層轉接器接口 (Data Adapter Architecture)</span>
+              <span class="text-emerald-700 font-mono">已預留 Finnhub / Polygon 接口</span>
+            </div>
+            <p class="text-stone-500">
+              系統架構已採用「UI 與數據層解耦」設計。未來若有預算獲取付費 API Key，只需在此填入即可直接將本地模擬數據切換為低延遲真實數據流。
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <input type="text" id="apiEndpoint" placeholder="API Gateway Endpoint" class="px-3 py-1.5 rounded border bg-white">
+              <input type="password" id="apiKey" placeholder="API Key / Secret" class="px-3 py-1.5 rounded border bg-white">
+              <button onclick="saveApiConfig()" class="px-3 py-1.5 rounded bg-stone-800 text-white font-medium hover:bg-stone-700">儲存 API 配置</button>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toastNotification" class="fixed bottom-5 right-5 z-50 transform translate-y-12 opacity-0 transition-all duration-300 px-4 py-2.5 rounded-xl shadow-lg border text-xs font-medium flex items-center gap-2 bg-stone-900 text-white border-stone-800">
+    <span id="toastIcon">💡</span>
+    <span id="toastMsg">通知訊息</span>
+  </div>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    // =========================================================================
+    // STATE & DATA STRUCTURES
+    // =========================================================================
+    let appState = {
+      theme: 'warm',
+      font: 'zen',
+      currentModule: 'module-learn',
+      currentLearnLevel: 1,
+      currentJlawSubtab: 'jlaw-tab-overview',
+      currentJlawCase: 'PLTR',
+      bookmarks: [],
+      masteredCards: [],
+      journalEntries: [],
+      chartCount: 0,
+      streakDays: 3,
+      currentWikiFilter: 'ALL',
+      currentWikiMode: 'grid',
+      currentSandboxTicker: 'NASDAQ:PLTR'
+    };
+
+    // 44+ Deep Knowledge Cards Database (Including J Law Gold Cards)
+    const WIKI_CARDS = [
+      // --- J LAW GOLD CARDS ---
+      {
+        id: 'jlaw-meta',
+        cat: 'JLAW',
+        title: '🏆 M.E.T.A. 多重優勢進場區',
+        subtitle: 'Multiple Edge Trading Area',
+        desc: '在同一狹窄價格區間內，匯集 3 個以上獨立技術因子（阻力翻轉支撐 + 關鍵均線 + 兩點趨勢線 + 量枯竭），構成不同流派市場共識點，提供極窄止損與極大向上非對稱盈虧比。',
+        rules: '🎯 口訣：單一指標毫無優勢，多重共振才是聖杯；勾選滿 3 個優勢才准出擊！',
+        mistake: '⚠️ 陷阱：只看到一條均線或一根 K 線就衝動買入。',
+        badge: 'J Law 冠軍武器'
+      },
+      {
+        id: 'jlaw-vcp',
+        cat: 'JLAW',
+        title: '🏆 VCP 波動收縮與 10% 緊湊突破',
+        subtitle: 'Volatility Contraction Pattern',
+        desc: '強勢股在突破前經歷 2~4 輪階梯式波幅遞減（如 -25% ➔ -12% ➔ -6%），最後緊湊區波幅收斂至 10% 以內，伴隨成交量極度枯竭（Dry-up），突破 Pivot 點時放量即成。',
+        rules: '🎯 口訣：波幅遞減代表籌碼洗淨，最後緊湊放量買入，嚴守 +5% 追高紅線！',
+        mistake: '⚠️ 陷阱：第一波回撤超過 50% 代表結構受損，不可視為標準 VCP。',
+        badge: 'J Law 突破戰法'
+      },
+      {
+        id: 'jlaw-utl-danger',
+        cat: 'JLAW',
+        title: '🏆 兩點趨勢線與危險點 (Danger Point)',
+        subtitle: '2-Point UTL & Danger Filtering',
+        desc: '不需傳統三點確認，兩點擺動低點即可成上升趨勢線。急跌首次直接觸碰趨勢線時為「危險點」，勝率低；需耐心等企穩反彈後，二次縮量回測 M.E.T.A. 才是高勝率買點。',
+        rules: '🎯 口訣：兩點即可畫線，首次觸碰是危險點切忌抄底，二次縮量回踩才動手。',
+        mistake: '⚠️ 陷阱：在急跌首次觸及趨勢線時左側盲目摸底。',
+        badge: 'J Law 幾何心法'
+      },
+      {
+        id: 'jlaw-channel',
+        cat: 'JLAW',
+        title: '🏆 「2+1」平行通道畫法與 TRL 離場',
+        subtitle: 'Parallel Channel Projection',
+        desc: '用兩個擺動低點畫出上升趨勢線（UTL），平行投射至中間的一個擺動高點，形成頂部通道阻力線（TRL）。觸及 TRL 且重疊週線阻力時，為極佳趁強主動獲利點。',
+        rules: '🎯 口訣：通道上沿做趁強止盈，通道下沿找 M.E.T.A. 上車。',
+        mistake: '⚠️ 陷阱：忽視通道上沿阻力，在通道頂部追高。',
+        badge: 'J Law 通道戰術'
+      },
+      {
+        id: 'jlaw-ma-trap',
+        cat: 'JLAW',
+        title: '🏆 反直覺均線：牛市 200MA 落後股陷阱',
+        subtitle: 'Relative Strength vs 200MA',
+        desc: '市場無神聖均線。大盤處於強勢牛市時，跌回自身 200MA 的個股本質上是被機構資金拋棄的弱勢股（Laggard），支撐極脆弱。強勢股只應在 10MA/20MA 尋找回踩。',
+        rules: '🎯 口訣：牛市買強不買弱，跌回 200MA 的股票碰都別碰！',
+        mistake: '⚠️ 陷阱：以為跌到 200MA 很便宜而逆勢抄底弱勢股。',
+        badge: 'J Law 動能哲學'
+      },
+      {
+        id: 'jlaw-rules',
+        cat: 'JLAW',
+        title: '🏆 J Law 18 條贏家守則與五步看圖',
+        subtitle: 'The 18 Rules & 5-Step SOP',
+        desc: '交易員最高憲法：每筆必設止損、絕不向下攤平、絕不在突破點 +5% 以上追價、週末完成 90% 預案、五步看圖順序（動能 ➔ 趨勢 ➔ 關鍵點 ➔ 均線 ➔ 微觀 K 線）。',
+        rules: '🎯 口訣：遵守紀律始終如一，做多新高做空新低，用利潤承擔風險。',
+        mistake: '⚠️ 陷阱：盤中即興憑感覺下單。',
+        badge: 'J Law 職人聖經'
+      },
+
+      // --- K-LINE CARDS ---
+      {
+        id: 'k-hammer',
+        cat: 'KLINE',
+        title: '錘子線 (Hammer)',
+        subtitle: '底部強烈買盤拒絕下跌',
+        desc: '下影線長度大於實體 2 倍以上，實體收在當日高位，無或僅有微小上影線。代表空頭試圖摜壓卻被多頭強力推回。',
+        rules: '🎯 口訣：長針探底收高位，次日確認可做多。',
+        mistake: '⚠️ 陷阱：未等次日高開或站上均線確認即盲目抄底。',
+        badge: '看漲反轉'
+      },
+      {
+        id: 'k-engulfing',
+        cat: 'KLINE',
+        title: '看漲吞沒 (Bullish Engulfing)',
+        subtitle: '大陽包覆前陰實體',
+        desc: '第二天的陽線實體完全吞噬前一天的陰線實體，成交量顯著放大，代表多頭已全面奪回主導權。',
+        rules: '🎯 口訣：吞沒放量力道足，止損設在吞沒底。',
+        mistake: '⚠️ 陷阱：成交量若萎縮，可能是假反轉弱彈。',
+        badge: '看漲反轉'
+      },
+      {
+        id: 'k-morningstar',
+        cat: 'KLINE',
+        title: '早晨之星 (Morning Star)',
+        subtitle: '三根 K 線經典啟明反轉',
+        desc: '第一根大陰線、第二根跳空十字星或小實體、第三根放量大陽線收在第一根陰線中點之上。',
+        rules: '🎯 口訣：一陰一星一大陽，黎明即起到天亮。',
+        mistake: '⚠️ 陷阱：第三根陽線若實體過小，反轉信號無效。',
+        badge: '看漲組合'
+      },
+      {
+        id: 'k-shootingstar',
+        cat: 'KLINE',
+        title: '射擊之星 (Shooting Star)',
+        subtitle: '高檔長上影線多頭受挫',
+        desc: '上影線長度為實體 2 倍以上，實體收在當日低位。多頭衝高遭遇強烈拋壓被打回。',
+        rules: '🎯 口訣：高檔放量長避雷針，多單減倉提防見頂。',
+        mistake: '⚠️ 陷阱：在震盪市中間出現往往只是洗盤，必須在高檔阻力區才有效。',
+        badge: '看跌反轉'
+      },
+      {
+        id: 'k-harami',
+        cat: 'KLINE',
+        title: '母子線 (Harami / 孕線)',
+        subtitle: '波動率驟降動能暫停',
+        desc: '第二根小 K 線實體完全包含在第一根大 K 線內部，如同懷孕母親。代表原有趨勢動能急劇停滯。',
+        rules: '🎯 口訣：孕線出現在關鍵位，等待破位順勢跟。',
+        mistake: '⚠️ 陷阱：孕線本身是中性信號，不可單憑此線下單。',
+        badge: '猶豫中繼'
+      },
+
+      // --- INDICATOR CARDS ---
+      {
+        id: 'ind-ma20',
+        cat: 'INDICATOR',
+        title: '20MA / 20EMA 動能均線',
+        subtitle: '波段交易之生命線',
+        desc: '追蹤近 20 個交易日的平均持倉成本。在強勢上升趨勢中，股價往往沿著 20MA 向上爬升，回踩縮量企穩為絕佳順勢買點。',
+        rules: '🎯 口訣：線上做多線下空，回踩不破順勢衝。',
+        mistake: '⚠️ 陷阱：震盪橫盤市中均線反覆被穿透，易產生假信號。',
+        badge: '趨勢指標'
+      },
+      {
+        id: 'ind-bollinger',
+        cat: 'INDICATOR',
+        title: '布林帶收口 (BB Squeeze)',
+        subtitle: '波動率極限壓縮與爆發',
+        desc: '上下軌標準差通道極度收窄，代表市場多空力量極度均衡、蓄勢待發。隨後的放量突破往往伴隨大單邊行情。',
+        rules: '🎯 口訣：開口笑時跟隨衝，收口極限抱緊等。',
+        mistake: '⚠️ 陷阱：收口期間在箱體內頻繁下單容易被雙邊磨損。',
+        badge: '波動率指標'
+      },
+      {
+        id: 'ind-vwap',
+        cat: 'INDICATOR',
+        title: 'VWAP 成交量加權平均價',
+        subtitle: '機構大資金的成本錨點',
+        desc: '計算每筆成交價格乘上成交量的加權平均值。當價格在 VWAP 之上，機構多單處於盈利狀態；跌破 VWAP 則轉為防守。',
+        rules: '🎯 口訣：站上 VWAP 不言空，跌破 VWAP 莫逞強。',
+        mistake: '⚠️ 陷阱：VWAP 適合日內及短線波段，不可單獨作為月線級別分析依據。',
+        badge: '量能指標'
+      },
+      {
+        id: 'ind-rsi-div',
+        cat: 'INDICATOR',
+        title: 'RSI 動能背離法',
+        subtitle: '價格與指標走勢背道而馳',
+        desc: '價格創波段新低，但 RSI 未創新低反而抬高（底背離）；或價格創歷史新高，RSI 卻走低（頂背離）。',
+        rules: '🎯 口訣：底背離見底防空，頂背離逢高收割。',
+        mistake: '⚠️ 陷阱：強趨勢中會出現連續 2~3 次背離，必須等待右側 K 線確認再進場。',
+        badge: '動能指標'
+      },
+
+      // --- PATTERNS ---
+      {
+        id: 'pat-wbottom',
+        cat: 'PATTERN',
+        title: '雙重底 (W底 / Double Bottom)',
+        subtitle: '經典底部反轉型態',
+        desc: '價格兩次探底受支撐，第二次探底成交量通常萎縮，隨後帶量突破中間高點形成的頸線阻力。',
+        rules: '🎯 口訣：W底成形看頸線，放量突破回踩買。',
+        mistake: '⚠️ 陷阱：未放量突破頸線前不可預先猜測 W 底成立。',
+        badge: '反轉型態'
+      },
+      {
+        id: 'pat-headshoulders',
+        cat: 'PATTERN',
+        title: '頭肩底 (Inverse Head & Shoulders)',
+        subtitle: '可靠度最高的大級別底部',
+        desc: '由左肩、更低的頭部、以及較高的右肩構成。右肩縮量整理後，放量衝破斜向或橫向頸線。',
+        rules: '🎯 口訣：左肩深陷頭部明，右肩縮量頸線衝。',
+        mistake: '⚠️ 陷阱：右肩若跌破頭部最低點則型態徹底瓦解。',
+        badge: '反轉型態'
+      },
+      {
+        id: 'pat-cupandhandle',
+        cat: 'PATTERN',
+        title: '杯柄型態 (Cup with Handle)',
+        subtitle: '歐奈爾超級成長股必備',
+        desc: 'U型平滑杯身經歷數月沉澱清洗浮籌，隨後在杯口右側形成回撤 &lt;12% 的緊湊柄部，突破柄部上沿即主升段啟動。',
+        rules: '🎯 口訣：深圓杯底洗浮籌，柄部收縮一飛沖天。',
+        mistake: '⚠️ 陷阱：V型尖底形成的杯身往往不夠健康，容易衝高回落。',
+        badge: '持續型態'
+      },
+
+      // --- MACRO ---
+      {
+        id: 'mac-vix',
+        cat: 'MACRO',
+        title: 'VIX 恐慌指數 (芝加哥波動率)',
+        subtitle: '標普 500 期權隱含波動率',
+        desc: '反映市場對未來 30 天波動預期。通常低於 15 為極度貪婪，高於 30 為恐慌，高於 45 往往標誌著恐慌性底部出現。',
+        rules: '🎯 口訣：眾人貪婪我謹慎，VIX 暴衝找機會。',
+        mistake: '⚠️ 陷阱：VIX 走高時做多美股槓桿 ETF 極易遭遇劇烈回撤。',
+        badge: '情緒指標'
+      },
+      {
+        id: 'mac-dxy',
+        cat: 'MACRO',
+        title: 'DXY 美元指數',
+        subtitle: '全球流動性水喉總閘',
+        desc: '美元強勢走高會吸乾新興市場流動性，並對以美元計價的大宗商品、港股、韓股造成估值壓制。',
+        rules: '🎯 口訣：美元回落萬物生，美元飆升防守先。',
+        mistake: '⚠️ 陷阱：只盯個股基本面，忽視美元指數破位引發的系統性外資撤退。',
+        badge: '宏觀流動性'
+      }
+    ];
+
+    // J Law 8 Real USIC Championship Case Studies Data
+    const JLAW_CASES = {
+      'PLTR': {
+        title: 'Palantir (PLTR) - 2024 大賽奪冠核心戰役',
+        direction: '🟢 做多 (LONG)',
+        date: '2024 年 8 月 - 9 月',
+        edges: [
+          '8月大盤暴跌時展現極強 RS 相對強度，率先逼近歷史新高',
+          '回調至前期重要橫向阻力翻轉支撐區 (Flipping Zone)',
+          '同時觸及 20MA 與 50MA 均線匯合支撐',
+          '觸及兩浪頂連接之趨勢線，全程成交量極度萎縮 (Dry-up)'
+        ],
+        sizingRule: '將 8 月季報在 20 美元買入賺取的 25%~30% 利潤作為「風險資本」，全數重倉加碼！即便止損也零傷本金。',
+        result: '奪冠最關鍵戰役，單一持倉貢獻最大淨值爆發！'
+      },
+      'SMCI': {
+        title: 'Super Micro (SMCI) - 2024 三重優勢暴賺戰役',
+        direction: '🟢 做多 (LONG)',
+        date: '2024 年第一季',
+        edges: [
+          '價格回調至突破後的下降趨勢線翻轉支撐',
+          '前期橫向密集阻力位翻轉成強支撐帶',
+          '精準回踩 20MA 動態均線支撐區'
+        ],
+        sizingRule: '在三重優勢共振處一步到位建倉，止損設於支撐下方 2.5%。',
+        result: '單筆交易斬獲超過 100% 回報，奠定大賽領先優勢！'
+      },
+      'APP': {
+        title: 'AppLovin (APP) - 五重優勢極窄止損突破',
+        direction: '🟢 做多 (LONG)',
+        date: '2024 年第二季',
+        edges: [
+          '下降趨勢線翻轉支撐',
+          '前浪頂阻力翻轉支撐區',
+          '回調精準觸及 10MA',
+          '進場前一日出現放量大陽線顯示動能重燃',
+          '進場當日成交量極度枯竭'
+        ],
+        sizingRule: '五重優勢疊加提供極窄止損空間，允許放大倉位而不增加總風險。',
+        result: '進場後股價隨即展開新一輪主升段暴漲。'
+      },
+      'OSCR': {
+        title: 'Oscar Health (OSCR) - 克服 FOMO 二次上車',
+        direction: '🟢 做多 (LONG)',
+        date: '2024 年 4 月',
+        edges: [
+          '錯過初始突破點 15.2 美元後，耐心等待回調',
+          '匯集 50MA 均線支撐',
+          '前期數月大平台阻力翻轉成支撐',
+          '上升趨勢線 UTL 匯合且成交量顯著萎縮'
+        ],
+        sizingRule: '不盲目追高，等待二次回調 M.E.T.A. 介入。',
+        result: '完美演繹「突破不追高，等待二次高勝率上車」系統優勢。'
+      },
+      'NFLX': {
+        title: 'Netflix (NFLX) - 避開危險點斬獲 >20R 盈虧比',
+        direction: '🟢 做多 ➔ TRL 通道頂離場',
+        date: '2023 年 5 月 - 7 月',
+        edges: [
+          '避開首次觸碰 UTL 的危險點 (Danger Point)，等待企穩確認',
+          '於前期阻力翻轉 + 10/20MA + UTL 縮量二次回踩進場',
+          '離場：觸及「2+1」平行通道上沿 (TRL) + 週線橫向大阻力'
+        ],
+        sizingRule: '初始止損僅約 2%，以極低風險博取超過 45% 漲幅。',
+        result: '兩個月獲利逾 45%，盈虧比高達驚人的 20R 以上！'
+      },
+      'FSLR': {
+        title: 'First Solar (FSLR) - 分層 M.E.T.A. 深層承接',
+        direction: '🟢 做多 (LONG)',
+        date: '2024 年業績突破後',
+        edges: [
+          '第一層淺回調 (10MA + 第一前浪頂) 被跌破',
+          '耐心等待股價回落至第二層深結構 (20MA + 第二前浪頂 + UTL)',
+          '成交量在第二層支撐帶徹底枯竭'
+        ],
+        sizingRule: '分層判斷，不在中間真空區接飛刀。',
+        result: '在更具結構深度的第二層支撐精準啟動。'
+      },
+      'GFI': {
+        title: 'Gold Fields (GFI) - 雙底突破拉回三重優勢',
+        direction: '🟢 做多 (LONG)',
+        date: '2024 年 3 月',
+        edges: [
+          '雙底形態帶量突破頸線',
+          '縮量回踩前浪頂頸線阻力翻轉支撐',
+          '觸及 20EMA 動態均線'
+        ],
+        sizingRule: '止損嚴格設置在結構支撐區下方，避免被正常波動洗出。',
+        result: '穩定走出標準順勢波段行情。'
+      },
+      'CAR': {
+        title: 'Avis Budget (CAR) - 買強沽弱對沖 (Short M.E.T.A.)',
+        direction: '🔴 沽空對沖 (SHORT)',
+        date: '2024 年 8 月中',
+        edges: [
+          '大盤反彈時，挑選跌破關鍵結構的極度弱勢股',
+          '反彈至前期重要跌破點形成的橫向阻力區',
+          '受制於 20MA 下行均線動態阻力',
+          '反彈過程成交量極度萎縮 (無買盤支撐)'
+        ],
+        sizingRule: '嚴格遵守「在最弱勢板塊選最弱勢股做空」的對沖原則。',
+        result: '觸及沽空 M.E.T.A. 區後迅速暴跌近 28%！'
+      }
+    };
+
+    // 8 Pre-built Strategies for Level 5
+    const STRATEGIES_LIST = [
+      {
+        id: 's-jlaw-meta',
+        title: '🏆 J Law M.E.T.A. 多重優勢拉回戰法',
+        tag: 'USIC 冠軍戰術',
+        badge: '勝率最高',
+        desc: '等待處於 Stage 2 的強勢股突破後縮量回調，匯集「阻力翻轉支撐 + 10/20MA + 兩點趨勢線」，在共振點一次性建滿預定倉位。',
+        entry: '回踩 M.E.T.A. 區收出縮量陽線或下影線錘子。',
+        stop: '結構支撐區下方 1.5%~2.5%。',
+        tp: '趁強在 2+1 通道上沿止盈，或趁弱以 20MA 移動止盈。'
+      },
+      {
+        id: 's-jlaw-vcp',
+        title: '🏆 J Law VCP 緊湊樞紐突破戰法',
+        tag: '經典突破',
+        badge: '大波段主升',
+        desc: '經歷 2~4 次波幅遞減收縮，最後緊湊整理區 &lt;10%，帶巨量突破樞紐點 (Pivot)，嚴格遵守 +5% 追高紅線。',
+        entry: '突破緊湊區上沿即買入（不追高 &gt;5%）。',
+        stop: '緊湊區下沿或 Pivot 突破點下方。',
+        tp: '主升段持有至出現頂背離或收盤破 10MA。'
+      },
+      {
+        id: 's-ma20',
+        title: '01. 均線回踩順勢策略 (MA20 Pullback)',
+        tag: '單邊趨勢',
+        badge: '美韓科技股最愛',
+        desc: '股價 &gt; MA20 &gt; MA50 均線上揚。縮量回踩 MA20 觸碰均線，收出長下影或吞沒線時順勢做多。',
+        entry: '縮量觸碰 MA20 企穩收陽。',
+        stop: '跌破 MA20 達 1.5% 或前 K 線低點。',
+        tp: '達到 2R 或跌破 10MA 減倉。'
+      },
+      {
+        id: 's-retest',
+        title: '02. 支撐阻力突破回測 (Break & Retest)',
+        tag: '箱體破位',
+        badge: '經典低風險',
+        desc: '帶量突破長期橫向盤整箱頂，不追高，等待第一次縮量回踩原阻力位企穩時介入。',
+        entry: '縮量回踩原阻力位收出看漲 K 線。',
+        stop: '收盤跌回箱體內部即止損（防假突破）。',
+        tp: '以箱體高度等幅向上測算 1:1 或 2:1 目標。'
+      },
+      {
+        id: 's-bbsqueeze',
+        title: '03. 布林帶收口爆破策略 (BB Squeeze)',
+        tag: '盤整末期',
+        badge: '抓單邊大行情',
+        desc: '布林帶上下軌極度收窄（帶寬降至歷史低位），放量大陽線突破上軌，MACD 柱狀體翻綠放大。',
+        entry: '第一根放量大陽線突破布林上軌。',
+        stop: '收盤跌回布林中軌（20MA）下方。',
+        tp: '沿著上軌抱牢，直到跌破中軌離場。'
+      },
+      {
+        id: 's-div',
+        title: '04. RSI / MACD 底背離抄底法 (Divergence)',
+        tag: '跌勢末端',
+        badge: '左側轉右側',
+        desc: '股價創波段新低，但 RSI 或 MACD 柱狀體一底比一底高。出現早晨之星或站回 5 日線右側進場。',
+        entry: '底背離後出現右側放量反轉 K 線。',
+        stop: '背離段最低點下方 1%。',
+        tp: '反彈至前波反彈頸線阻力或 MA50。'
+      },
+      {
+        id: 's-gapgo',
+        title: '05. 跳空缺口不補強勢法 (Gap & Go)',
+        tag: '重大財報',
+        badge: '爆發力最強',
+        desc: '巨量跳空高開突破大阻力，連續 3 日盤中回調均不跌破缺口下緣，顯示機構買盤極度急迫。',
+        entry: '回測缺口上緣不補企穩買入。',
+        stop: '收盤完全回補缺口即止損。',
+        tp: '持有直到動能減弱出現天量長上影線。'
+      },
+      {
+        id: 's-range',
+        title: '06. 箱型區間高拋低吸 (Range Trading)',
+        tag: '震盪市況',
+        badge: '港股最常用',
+        desc: '市場無明顯趨勢，在清晰箱體下沿支撐區逢低買入、箱體上沿阻力區止盈平倉。',
+        entry: '觸碰箱體下沿並收出看漲反轉線。',
+        stop: '跌破箱底 1% 止損。',
+        tp: '箱體上沿減倉 80%。'
+      }
+    ];
+
+    // =========================================================================
+    // INITIALIZATION & STORAGE
+    // =========================================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      initLiveClock();
+      applyTheme(appState.theme);
+      applyFont(appState.font);
+      
+      // Render components
+      renderWikiCards();
+      renderStrategiesGrid();
+      renderCandlePatterns();
+      renderJlawCase('PLTR');
+      renderJournalList();
+      updateQaMatrixDisplay();
+      runPositionSizer();
+      updateCandleLabFromInputs();
+
+      // Ensure view matches module
+      switchModule(appState.currentModule);
+
+      // Default sandbox widget load
+      loadTradingViewWidget('NASDAQ:PLTR');
+    });
+
+    function saveState() {
+      try {
+        localStorage.setItem('tamaster_state_v3', JSON.stringify(appState));
+      } catch (e) {
+        console.error('Storage save failed:', e);
+      }
+      updateSidebarStats();
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem('tamaster_state_v3');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          appState = { ...appState, ...parsed };
+        }
+      } catch (e) {
+        console.error('Storage load error, using default:', e);
+      }
+    }
+
+    function updateSidebarStats() {
+      const streakEl = document.getElementById('sidebarStreak');
+      const countEl = document.getElementById('sidebarJournalCount');
+      if (streakEl) streakEl.innerText = `${appState.streakDays} 天`;
+      if (countEl) countEl.innerText = `${appState.journalEntries.length} 篇`;
+      const badge = document.getElementById('reviewStreakDisplay');
+      if (badge) badge.innerText = `🔥 連續 ${appState.streakDays} 天`;
+      const wikiBadge = document.getElementById('sidebarCardCount');
+      if (wikiBadge) wikiBadge.innerText = `${WIKI_CARDS.length} 卡`;
+    }
+
+    // =========================================================================
+    // NAVIGATION & MODULE SWITCHING
+    // =========================================================================
+    function switchModule(modId) {
+      appState.currentModule = modId;
+      document.querySelectorAll('.module-view').forEach(m => m.classList.add('hidden'));
+      const target = document.getElementById(modId);
+      if (target) target.classList.remove('hidden');
+
+      // Update Sidebar styling
+      document.querySelectorAll('#mainSidebar button').forEach(b => {
+        b.classList.remove('bg-stone-200/70', 'font-bold');
+      });
+      const currentNav = document.getElementById(`nav-${modId}`);
+      if (currentNav && !currentNav.id.includes('jlaw')) {
+        currentNav.classList.add('bg-stone-200/70', 'font-bold');
+      }
+
+      saveState();
+
+      // Trigger redraws if needed
+      if (modId === 'module-learn' && appState.currentLearnLevel === 2) {
+        setTimeout(updateCandleLabFromInputs, 100);
+      }
+    }
+
+    function toggleSidebar() {
+      const sb = document.getElementById('mainSidebar');
+      if (sb) {
+        sb.classList.toggle('-translate-x-full');
+        sb.classList.toggle('w-0');
+        sb.classList.toggle('w-72');
+      }
+    }
+
+    function switchLearnLevel(lvl) {
+      appState.currentLearnLevel = lvl;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.learn-level-content').forEach(c => c.classList.add('hidden'));
+
+      const btn = document.getElementById(`btn-lvl-${lvl}`);
+      const content = document.getElementById(`learn-level-${lvl}`);
+      if (btn) btn.classList.add('active');
+      if (content) content.classList.remove('hidden');
+
+      if (lvl === 2) {
+        setTimeout(updateCandleLabFromInputs, 50);
+      }
+    }
+
+    function switchJlawSubtab(tabId) {
+      appState.currentJlawSubtab = tabId;
+      document.querySelectorAll('.tab-btn-jlaw').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.jlaw-subcontent').forEach(c => c.classList.add('hidden'));
+
+      const target = document.getElementById(tabId);
+      if (target) target.classList.remove('hidden');
+
+      // Map btn id
+      const btnMap = {
+        'jlaw-tab-overview': 'btn-jlaw-overview',
+        'jlaw-tab-meta': 'btn-jlaw-meta',
+        'jlaw-tab-cases': 'btn-jlaw-cases',
+        'jlaw-tab-sizing': 'btn-jlaw-sizing',
+        'jlaw-tab-mra': 'btn-jlaw-mra'
+      };
+      const btn = document.getElementById(btnMap[tabId]);
+      if (btn) btn.classList.add('active');
+    }
+
+    // =========================================================================
+    // THEMES & FONTS
+    // =========================================================================
+    function changeTheme(themeKey) {
+      appState.theme = themeKey;
+      applyTheme(themeKey);
+      saveState();
+      showToast(`已切換色彩主題：${themeKey.toUpperCase()}`);
+    }
+
+    function applyTheme(themeKey) {
+      const sel = document.getElementById('themeSelector');
+      if (sel) sel.value = themeKey;
+      document.documentElement.setAttribute('data-theme', themeKey);
+    }
+
+    function changeFont(fontKey) {
+      appState.font = fontKey;
+      applyFont(fontKey);
+      saveState();
+      showToast('已更新字體樣式');
+    }
+
+    function applyFont(fontKey) {
+      const sel = document.getElementById('fontSelector');
+      if (sel) sel.value = fontKey;
+      if (fontKey === 'zen') {
+        document.documentElement.style.setProperty('--font-family', "'Zen Maru Gothic', 'Plus Jakarta Sans', sans-serif");
+      } else if (fontKey === 'sans') {
+        document.documentElement.style.setProperty('--font-family', "'Noto Sans TC', 'Plus Jakarta Sans', sans-serif");
+      } else if (fontKey === 'serif') {
+        document.documentElement.style.setProperty('--font-family', "'Noto Serif TC', serif");
+      }
+    }
+
+    // =========================================================================
+    // J LAW INTERACTIVE EXPERIMENTS & CASES
+    // =========================================================================
+    function toggleMetaLayer(layerName) {
+      const svgLayer = document.getElementById(`svg-layer-${layerName}`);
+      const btn = document.getElementById(`layer-btn-${layerName}`);
+      if (svgLayer) {
+        const isHidden = svgLayer.style.display === 'none';
+        svgLayer.style.display = isHidden ? 'block' : 'none';
+        if (btn) {
+          if (isHidden) {
+            btn.classList.add('bg-amber-50', 'text-amber-800', 'border-amber-300');
+            btn.classList.remove('opacity-50');
+          } else {
+            btn.classList.remove('bg-amber-50', 'text-amber-800', 'border-amber-300');
+            btn.classList.add('opacity-50');
+          }
+        }
+      }
+    }
+
+    function renderJlawCase(ticker) {
+      appState.currentJlawCase = ticker;
+      const data = JLAW_CASES[ticker];
+      if (!data) return;
+
+      // Update button highlights
+      document.querySelectorAll('[id^="case-btn-"]').forEach(b => {
+        b.classList.remove('bg-amber-600', 'text-white', 'border-amber-600');
+        b.classList.add('card-theme');
+      });
+      const activeBtn = document.getElementById(`case-btn-${ticker}`);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-amber-600', 'text-white', 'border-amber-600');
+        activeBtn.classList.remove('card-theme');
+      }
+
+      const container = document.getElementById('jlawCaseDetailContainer');
+      if (!container) return;
+
+      container.innerHTML = `
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b pb-3 gap-2">
+          <div>
+            <div class="flex items-center gap-2">
+              <h4 class="text-base font-bold text-stone-900">${data.title}</h4>
+              <span class="text-[10px] px-2 py-0.5 rounded font-mono font-bold ${data.direction.includes('做空') ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'}">${data.direction}</span>
+            </div>
+            <span class="text-xs text-stone-500 font-mono">戰役時間：${data.date}</span>
+          </div>
+          <button onclick="applyCaseToJournal('${ticker}')" class="px-3 py-1.5 rounded-lg bg-amber-500 text-white font-bold text-xs hover:bg-amber-600 transition flex items-center gap-1 self-start sm:self-auto">
+            <span>帶入覆盤日誌</span> ➔
+          </button>
+        </div>
+
+        <div class="space-y-2 text-xs">
+          <div class="font-bold text-amber-900">🎯 本案例構成之核心重疊優勢 (Edges)：</div>
+          <ul class="list-disc list-inside space-y-1 text-stone-700">
+            ${data.edges.map(e => `<li>${e}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div class="p-3 rounded-lg bg-stone-100 border text-xs space-y-1">
+          <strong class="text-stone-800">💰 注碼與風險工程策略：</strong>
+          <p class="text-stone-600">${data.sizingRule}</p>
+        </div>
+
+        <div class="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-emerald-950">
+          <strong>🏆 最終戰果與啟示：</strong> ${data.result}
+        </div>
+      `;
+    }
+
+    function applyCaseToJournal(ticker) {
+      const data = JLAW_CASES[ticker];
+      if (!data) return;
+
+      switchModule('module-review');
+      const tInput = document.getElementById('jTicker');
+      const dInput = document.getElementById('jDirection');
+      const notes = document.getElementById('jNotes');
+
+      if (tInput) tInput.value = ticker;
+      if (dInput) dInput.value = data.direction.includes('做空') ? 'SHORT' : 'LONG';
+      if (notes) {
+        notes.value = `【J Law ${ticker} 實戰復盤學習】\n重疊優勢：\n${data.edges.join('; ')}\n風控原則：${data.sizingRule}`;
+      }
+      showToast(`已將 ${ticker} 實戰結構帶入覆盤表單！`);
+    }
+
+    function activateSlumpReset() {
+      setSizingRiskTier(0.15);
+      switchModule('module-review');
+      showToast('🧹 已啟動低谷期「清倉重置」模式，單筆風險降至 0.15%');
+    }
+
+    // =========================================================================
+    // K-LINE ANATOMY LAB (USER-CUSTOM PRICE INPUTS)
+    // =========================================================================
+    function setSampleCandle(type) {
+      const h = document.getElementById('labHigh');
+      const c = document.getElementById('labClose');
+      const o = document.getElementById('labOpen');
+      const l = document.getElementById('labLow');
+
+      if (type === 'hammer') {
+        h.value = 138.5; c.value = 137.8; o.value = 135.0; l.value = 125.0;
+      } else if (type === 'shooting') {
+        h.value = 150.0; c.value = 136.0; o.value = 138.0; l.value = 135.5;
+      } else if (type === 'marubozu') {
+        h.value = 145.0; c.value = 144.5; o.value = 130.5; l.value = 130.0;
+      }
+      updateCandleLabFromInputs();
+    }
+
+    function updateCandleLabFromInputs() {
+      const high = parseFloat(document.getElementById('labHigh').value) || 100;
+      const close = parseFloat(document.getElementById('labClose').value) || 90;
+      const open = parseFloat(document.getElementById('labOpen').value) || 85;
+      const low = parseFloat(document.getElementById('labLow').value) || 80;
+
+      const canvas = document.getElementById('candleLabCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width;
+      const H = canvas.height;
+
+      ctx.clearRect(0, 0, W, H);
+
+      // Validation
+      const realHigh = Math.max(high, close, open, low);
+      const realLow = Math.min(high, close, open, low);
+      const range = realHigh - realLow || 1;
+
+      // Scaling helper to canvas Y
+      const padY = 25;
+      const effH = H - padY * 2;
+      const getY = (val) => padY + effH * (1 - (val - realLow) / range);
+
+      const yH = getY(realHigh);
+      const yL = getY(realLow);
+      const yO = getY(open);
+      const yC = getY(close);
+
+      const isUp = close >= open;
+      const color = isUp ? '#10B981' : '#EF4444'; // 綠漲紅跌
+
+      // Draw Upper/Lower Shadow (Wicks)
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(W / 2, yH);
+      ctx.lineTo(W / 2, yL);
+      ctx.stroke();
+
+      // Draw Body
+      const bodyTop = Math.min(yO, yC);
+      const bodyH = Math.max(Math.abs(yC - yO), 3);
+      const bodyW = 54;
+
+      ctx.fillStyle = color;
+      ctx.fillRect(W / 2 - bodyW / 2, bodyTop, bodyW, bodyH);
+
+      // White outline for clarity
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(W / 2 - bodyW / 2, bodyTop, bodyW, bodyH);
+
+      // Price tags on canvas
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = '10px JetBrains Mono';
+      ctx.textAlign = 'right';
+      ctx.fillText(`H: ${realHigh.toFixed(2)}`, W / 2 - bodyW / 2 - 8, yH + 4);
+      ctx.fillText(`L: ${realLow.toFixed(2)}`, W / 2 - bodyW / 2 - 8, yL + 4);
+
+      ctx.textAlign = 'left';
+      ctx.fillText(`C: ${close.toFixed(2)}`, W / 2 + bodyW / 2 + 8, yC + 4);
+      ctx.fillText(`O: ${open.toFixed(2)}`, W / 2 + bodyW / 2 + 8, yO + 4);
+
+      // Calculate Metrics
+      const totalRange = realHigh - realLow;
+      const bodyRange = Math.abs(close - open);
+      const upperShadow = realHigh - Math.max(open, close);
+      const lowerShadow = Math.min(open, close) - realLow;
+
+      const bodyPct = totalRange > 0 ? ((bodyRange / totalRange) * 100).toFixed(1) : 0;
+      const upShadowPct = totalRange > 0 ? ((upperShadow / totalRange) * 100).toFixed(1) : 0;
+      const lowShadowPct = totalRange > 0 ? ((lowerShadow / totalRange) * 100).toFixed(1) : 0;
+      const changePct = open > 0 ? (((close - open) / open) * 100).toFixed(2) : 0;
+
+      const metricsEl = document.getElementById('candleLabMetrics');
+      if (metricsEl) {
+        metricsEl.innerHTML = `
+          <div class="flex items-center justify-center gap-3 text-stone-300">
+            <span>波幅: <strong class="text-white">${totalRange.toFixed(2)}</strong></span>
+            <span>實體: <strong class="${isUp ? 'text-emerald-400' : 'text-rose-400'}">${bodyPct}%</strong></span>
+            <span>上影: <strong>${upShadowPct}%</strong></span>
+            <span>下影: <strong>${lowShadowPct}%</strong></span>
+            <span>漲跌: <strong class="${isUp ? 'text-emerald-400' : 'text-rose-400'}">${changePct > 0 ? '+' : ''}${changePct}%</strong></span>
+          </div>
+        `;
+      }
+
+      // Diagnosis logic
+      const nameEl = document.getElementById('labCandleName');
+      const typeEl = document.getElementById('labCandleType');
+      const meanEl = document.getElementById('labCandleMeaning');
+
+      if (typeEl) {
+        typeEl.innerText = isUp ? '綠陽 K (多方推進)' : '紅陰 K (空方打壓)';
+        typeEl.className = isUp ? 'text-[10px] px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono font-bold' : 'text-[10px] px-2 py-0.5 rounded bg-rose-100 text-rose-800 font-mono font-bold';
+      }
+
+      if (lowerShadow > bodyRange * 2 && upperShadow < bodyRange * 0.5) {
+        nameEl.innerText = isUp ? '標準錘子線 (Hammer)' : '吊人線 (Hanging Man)';
+        meanEl.innerText = '下影線超過實體兩倍，顯示空頭下砸時遭遇強烈多頭買盤強力推升承接！';
+      } else if (upperShadow > bodyRange * 2 && lowerShadow < bodyRange * 0.5) {
+        nameEl.innerText = '射擊之星 / 倒錘線 (Shooting Star)';
+        meanEl.innerText = '上影線超過實體兩倍，多頭衝高受阻，上方拋壓沉重被打回。';
+      } else if (bodyPct > 80) {
+        nameEl.innerText = isUp ? '大陽線 (Bullish Marubozu)' : '大陰線 (Bearish Marubozu)';
+        meanEl.innerText = '全天呈現壓倒性單邊實體推進，幾乎無上下影線，動能極度充沛！';
+      } else if (bodyPct < 15) {
+        nameEl.innerText = '十字星 (Doji)';
+        meanEl.innerText = '多空力量在收盤達到微妙均衡，往往預告原有趨勢即將發生轉折或大幅減速。';
+      } else {
+        nameEl.innerText = isUp ? '普通推進陽線' : '普通回調陰線';
+        meanEl.innerText = '常規波動區間，需搭配所在均線與關鍵阻力支撐位共同研判。';
+      }
+    }
+
+    function renderCandlePatterns() {
+      const grid = document.getElementById('candlePatternGrid');
+      if (!grid) return;
+
+      const patterns = [
+        { name: '看漲吞沒', desc: '陽實體包陰，強烈反轉', type: 'up' },
+        { name: '看跌吞沒', desc: '陰實體包陽，高檔出貨', type: 'down' },
+        { name: '早晨之星', desc: '陰線+十字+大陽', type: 'up' },
+        { name: '黃昏之星', desc: '陽線+十字+大陰', type: 'down' },
+        { name: '三白兵', desc: '連續三根紅陽推進', type: 'up' },
+        { name: '三隻烏鴉', desc: '連續三根長陰下砸', type: 'down' },
+        { name: '母子孕線', desc: '小實體在母體內', type: 'neutral' },
+        { name: '高檔吊人', desc: '高檔長下影線誘多', type: 'down' }
+      ];
+
+      grid.innerHTML = patterns.map(p => `
+        <div class="p-3 rounded-xl card-theme-sub border space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-stone-800">${p.name}</span>
+            <span class="text-[9px] px-1.5 py-0.2 rounded font-mono ${p.type === 'up' ? 'bg-emerald-100 text-emerald-800' : p.type === 'down' ? 'bg-rose-100 text-rose-800' : 'bg-stone-100 text-stone-600'}">
+              ${p.type === 'up' ? '看漲' : p.type === 'down' ? '看跌' : '觀望'}
+            </span>
+          </div>
+          <p class="text-[11px] text-stone-500">${p.desc}</p>
+        </div>
+      `).join('');
+    }
+
+    // =========================================================================
+    // LEVEL 5 STRATEGIES GRID
+    // =========================================================================
+    function renderStrategiesGrid() {
+      const container = document.getElementById('strategiesGrid');
+      if (!container) return;
+
+      container.innerHTML = STRATEGIES_LIST.map(s => `
+        <div class="card-theme rounded-xl p-5 border space-y-3 flex flex-col justify-between">
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${s.id.includes('jlaw') ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-stone-100 text-stone-600'}">${s.tag}</span>
+              <span class="text-xs font-bold text-emerald-700">${s.badge}</span>
+            </div>
+            <h3 class="text-sm font-bold text-stone-900">${s.title}</h3>
+            <p class="text-xs text-stone-600 leading-relaxed">${s.desc}</p>
+            
+            <div class="p-3 rounded-lg card-theme-sub border space-y-1 text-xs">
+              <div><strong>🟢 進場條件：</strong>${s.entry}</div>
+              <div><strong>🛑 止損設置：</strong>${s.stop}</div>
+              <div><strong>🎯 目標止盈：</strong>${s.tp}</div>
+            </div>
+          </div>
+
+          <button onclick="applyStrategyToJournal('${s.title}')" class="w-full mt-2 py-1.5 rounded-lg text-xs font-medium border hover:bg-stone-100 transition flex items-center justify-center gap-1.5 text-stone-700">
+            <span>套用此策略至今日覆盤日誌</span> ➔
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function applyStrategyToJournal(strategyTitle) {
+      switchModule('module-review');
+      const stratSel = document.getElementById('jStrategy');
+      if (stratSel) {
+        // match best option
+        if (strategyTitle.includes('J Law M.E.T.A.')) stratSel.value = 'JLaw-META';
+        else if (strategyTitle.includes('J Law VCP')) stratSel.value = 'JLaw-VCP';
+        else if (strategyTitle.includes('均線回踩')) stratSel.value = 'MA20-Pullback';
+        else if (strategyTitle.includes('突破回測')) stratSel.value = 'Break-Retest';
+        else if (strategyTitle.includes('布林收口')) stratSel.value = 'BB-Squeeze';
+        else if (strategyTitle.includes('底背離')) stratSel.value = 'Divergence';
+        else if (strategyTitle.includes('跳空缺口')) stratSel.value = 'Gap-Go';
+        else if (strategyTitle.includes('箱型區間')) stratSel.value = 'Range-Trade';
+      }
+      showToast(`已套用「${strategyTitle}」至覆盤表單！`);
+    }
+
+    // =========================================================================
+    // POSITION SIZER & RISK ENGINE
+    // =========================================================================
+    function setSizingRiskTier(tier) {
+      document.getElementById('calcRiskPct').value = tier.toFixed(2);
+      
+      // Update button styling
+      document.querySelectorAll('[id^="tier-btn-"]').forEach(b => {
+        b.classList.remove('bg-amber-500', 'text-white', 'font-bold', 'border-amber-600');
+      });
+      const tKey = tier.toFixed(2).replace('.', '');
+      const activeBtn = document.getElementById(`tier-btn-${tKey}`);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-amber-500', 'text-white', 'font-bold', 'border-amber-600');
+      }
+      runPositionSizer();
+    }
+
+    function runPositionSizer() {
+      const account = parseFloat(document.getElementById('calcAccountSize').value) || 50000;
+      const riskPct = parseFloat(document.getElementById('calcRiskPct').value) || 0.3;
+      const entry = parseFloat(document.getElementById('calcEntryPrice').value) || 100;
+      const stop = parseFloat(document.getElementById('calcStopPrice').value) || 95;
+      const cushion = parseFloat(document.getElementById('calcProfitCushion').value) || 0;
+      const pivot = parseFloat(document.getElementById('calcPivotPrice').value) || 0;
+
+      // Base risk calculation
+      let maxLoss = account * (riskPct / 100) + cushion;
+      const perShareRisk = Math.abs(entry - stop) || 0.01;
+      const shareQty = Math.floor(maxLoss / perShareRisk);
+      const totalCapital = (shareQty * entry).toFixed(0);
+
+      // 2R Target price
+      const isLong = entry >= stop;
+      const target2R = isLong ? entry + perShareRisk * 2 : entry - perShareRisk * 2;
+
+      // Check J Law Rule 8 (+5% Pivot warning)
+      const chasingEl = document.getElementById('chasingWarning');
+      if (pivot > 0 && entry > pivot * 1.05) {
+        chasingEl.classList.remove('hidden');
+      } else {
+        chasingEl.classList.add('hidden');
+      }
+
+      // Display results
+      document.getElementById('resMaxLoss').innerText = `$${maxLoss.toFixed(0)}`;
+      document.getElementById('resShareQty').innerText = `${shareQty.toLocaleString()} 股`;
+      document.getElementById('resTotalCapital').innerText = `$${Number(totalCapital).toLocaleString()}`;
+      document.getElementById('resTargetPrice').innerText = `$${target2R.toFixed(2)}`;
+    }
+
+    function applySizingToJournal() {
+      const entry = document.getElementById('calcEntryPrice').value;
+      const stop = document.getElementById('calcStopPrice').value;
+      const qtyText = document.getElementById('resShareQty').innerText.replace(/[^0-9]/g, '');
+
+      document.getElementById('jEntry').value = entry;
+      document.getElementById('jStop').value = stop;
+      document.getElementById('jQty').value = qtyText;
+
+      showToast('已將計算機數據帶入下方覆盤表單！');
+    }
+
+    // =========================================================================
+    // M.E.T.A. SCORE & JOURNAL & QA MATRIX
+    // =========================================================================
+    function updateMetaScore() {
+      const checks = document.querySelectorAll('.meta-edge-check:checked');
+      const badge = document.getElementById('metaEdgeScoreBadge');
+      if (!badge) return;
+
+      const score = checks.length;
+      badge.innerText = `${score} / 6 優勢`;
+
+      if (score >= 3) {
+        badge.className = 'font-mono text-[11px] px-2.5 py-0.5 rounded font-bold bg-emerald-100 text-emerald-800 border border-emerald-300';
+      } else {
+        badge.className = 'font-mono text-[11px] px-2.5 py-0.5 rounded font-bold text-stone-600 border';
+      }
+    }
+
+    function saveJournalEntry() {
+      const date = document.getElementById('jDate').value || new Date().toISOString().split('T')[0];
+      const ticker = document.getElementById('jTicker').value.trim().toUpperCase();
+      if (!ticker) {
+        showToast('請填寫股票代號！');
+        return;
+      }
+
+      const checks = document.querySelectorAll('.meta-edge-check:checked');
+      const metaScore = checks.length;
+
+      const newEntry = {
+        id: 'entry_' + Date.now(),
+        date,
+        ticker,
+        direction: document.getElementById('jDirection').value,
+        strategy: document.getElementById('jStrategy').value,
+        metaScore,
+        entry: parseFloat(document.getElementById('jEntry').value) || 0,
+        stop: parseFloat(document.getElementById('jStop').value) || 0,
+        qty: parseInt(document.getElementById('jQty').value) || 0,
+        status: document.getElementById('jStatus').value,
+        regime: document.getElementById('jRegime').value,
+        exitType: document.getElementById('jExitType').value,
+        imgUrl: document.getElementById('jImgUrl').value.trim(),
+        notes: document.getElementById('jNotes').value.trim()
+      };
+
+      appState.journalEntries.unshift(newEntry);
+      saveState();
+      renderJournalList();
+      updateQaMatrixDisplay();
+
+      // Reset form fields
+      document.getElementById('jTicker').value = '';
+      document.getElementById('jNotes').value = '';
+      document.getElementById('jImgUrl').value = '';
+      document.querySelectorAll('.meta-edge-check').forEach(c => c.checked = false);
+      updateMetaScore();
+
+      showToast(`已成功儲存 ${ticker} 覆盤日誌！`);
+    }
+
+    function deleteJournalEntry(id) {
+      if (confirm('確定要刪除這筆日誌嗎？')) {
+        appState.journalEntries = appState.journalEntries.filter(e => e.id !== id);
+        saveState();
+        renderJournalList();
+        updateQaMatrixDisplay();
+        showToast('已刪除該筆覆盤日誌');
+      }
+    }
+
+    function renderJournalList() {
+      const container = document.getElementById('journalEntriesList');
+      const badge = document.getElementById('journalCountBadge');
+      if (!container) return;
+
+      if (badge) badge.innerText = `${appState.journalEntries.length} 篇`;
+
+      if (appState.journalEntries.length === 0) {
+        container.innerHTML = `
+          <div class="p-6 text-center text-xs text-stone-400 card-theme-sub rounded-xl border">
+            尚無覆盤紀錄。請在上方填寫今天的第一筆交易！
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = appState.journalEntries.map(e => `
+        <div class="p-4 rounded-xl card-theme border space-y-2 text-xs">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="font-bold font-mono text-sm text-stone-900">${e.ticker}</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold ${e.direction === 'LONG' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                ${e.direction === 'LONG' ? '做多' : '做空'}
+              </span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-stone-100 text-stone-600">${e.strategy}</span>
+              ${e.metaScore >= 3 ? `<span class="px-1.5 py-0.2 rounded text-[9px] bg-amber-100 text-amber-900 border border-amber-300 font-bold">M.E.T.A. ${e.metaScore} 重共振</span>` : ''}
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-stone-400 font-mono text-[11px]">${e.date}</span>
+              <button onclick="deleteJournalEntry('${e.id}')" class="text-stone-400 hover:text-rose-600 text-xs">✕</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 p-2.5 rounded-lg card-theme-sub text-[11px] font-mono">
+            <div>進場：<strong>$${e.entry}</strong></div>
+            <div>止損：<strong class="text-rose-600">$${e.stop}</strong></div>
+            <div>股數：<strong>${e.qty} 股</strong></div>
+            <div>狀態：<strong class="${e.status.includes('WIN') ? 'text-emerald-700' : e.status.includes('LOSS') ? 'text-rose-700' : 'text-stone-600'}">${e.status}</strong></div>
+          </div>
+
+          ${e.notes ? `<p class="text-stone-600 text-[11px] bg-stone-50 p-2 rounded border">${e.notes}</p>` : ''}
+          ${e.imgUrl ? `<div class="pt-1"><a href="${e.imgUrl}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1 text-[11px]"><span>📈 查看當時圖表截圖</span> ➔</a></div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    function updateQaMatrixDisplay() {
+      let goodWin = 0, goodLoss = 0, badWin = 0, badLoss = 0;
+      appState.journalEntries.forEach(e => {
+        if (e.status === 'WIN') goodWin++;
+        else if (e.status === 'LOSS') goodLoss++;
+        else if (e.status === 'BAD_WIN') badWin++;
+        else if (e.status === 'BAD_LOSS') badLoss++;
+      });
+
+      document.getElementById('qaCountGoodWin').innerText = goodWin;
+      document.getElementById('qaCountGoodLoss').innerText = goodLoss;
+      document.getElementById('qaCountBadWin').innerText = badWin;
+      document.getElementById('qaCountBadLoss').innerText = badLoss;
+
+      const totalClosed = goodWin + goodLoss + badWin + badLoss;
+      const goodTrades = goodWin + goodLoss;
+      const qaScore = totalClosed > 0 ? ((goodTrades / totalClosed) * 100).toFixed(0) : 100;
+      const realWinrate = totalClosed > 0 ? (((goodWin + badWin) / totalClosed) * 100).toFixed(0) : '--';
+
+      document.getElementById('qaScoreDisplay').innerText = `${qaScore}%`;
+      document.getElementById('realWinrateDisplay').innerText = `${realWinrate}%`;
+    }
+
+    // =========================================================================
+    // WORK ROUTINE & CHART COUNTER
+    // =========================================================================
+    function checkShiftRoutine() {
+      const p = document.getElementById('shiftPre').checked;
+      const d = document.getElementById('shiftDuring').checked;
+      const a = document.getElementById('shiftPost').checked;
+
+      if (p && d && a) {
+        appState.streakDays++;
+        saveState();
+        showToast('🎉 今日三班全部打卡完成！連續執勤天數 +1');
+      }
+    }
+
+    function addChartCount(n) {
+      appState.chartCount = Math.min(appState.chartCount + n, 100);
+      updateChartCounterUI();
+      saveState();
+    }
+
+    function resetChartCount() {
+      appState.chartCount = 0;
+      updateChartCounterUI();
+      saveState();
+    }
+
+    function updateChartCounterUI() {
+      const val = document.getElementById('chartCounterValue');
+      const bar = document.getElementById('chartCounterBar');
+      if (val) val.innerText = appState.chartCount;
+      if (bar) bar.style.width = `${Math.min((appState.chartCount / 50) * 100, 100)}%`;
+    }
+
+    function triggerManualLockout() {
+      const banner = document.getElementById('circuitBreakerBanner');
+      if (banner) {
+        banner.className = 'p-3 rounded-lg border text-xs flex items-center justify-between bg-rose-50 border-rose-300 text-rose-900 font-bold';
+        banner.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-rose-600 animate-ping"></span>
+            <span>🛑 今日強制作業終止 (LOCKOUT)：已拉閘下班！保護本金就是今天最好的工作！</span>
+          </div>
+          <button onclick="resetLockout()" class="px-2 py-0.5 rounded bg-white text-stone-700 border text-[10px]">解鎖</button>
+        `;
+      }
+      showToast('🛑 已觸發熔斷鎖，立刻關掉螢幕下班！');
+    }
+
+    function resetLockout() {
+      const banner = document.getElementById('circuitBreakerBanner');
+      if (banner) {
+        banner.className = 'p-3 rounded-lg border text-xs flex items-center justify-between bg-stone-50 border-stone-200';
+        banner.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <span>風控熔斷監控：當日未達 2R 止損上限，系統運作正常。</span>
+          </div>
+          <button onclick="triggerManualLockout()" class="px-2.5 py-1 rounded bg-stone-200 text-stone-700 hover:bg-stone-300 text-[11px] font-medium">主動停權下班</button>
+        `;
+      }
+    }
+
+    // =========================================================================
+    // WIKI & FLASHCARDS
+    // =========================================================================
+    function setWikiFilter(cat) {
+      appState.currentWikiFilter = cat;
+      document.querySelectorAll('.wiki-tag-btn').forEach(b => {
+        b.classList.remove('bg-stone-800', 'text-white', 'active');
+      });
+      event.target.classList.add('bg-stone-800', 'text-white', 'active');
+      renderWikiCards();
+    }
+
+    function toggleWikiMode(mode) {
+      appState.currentWikiMode = mode;
+      document.getElementById('btn-wiki-grid').className = mode === 'grid' ? 'px-3 py-1 rounded border active font-medium bg-stone-800 text-white' : 'px-3 py-1 rounded border font-medium card-theme';
+      document.getElementById('btn-wiki-flashcard').className = mode === 'flashcard' ? 'px-3 py-1 rounded border active font-medium bg-stone-800 text-white' : 'px-3 py-1 rounded border font-medium card-theme';
+      renderWikiCards();
+    }
+
+    function filterWikiCards() {
+      renderWikiCards();
+    }
+
+    function toggleBookmark(cardId) {
+      if (appState.bookmarks.includes(cardId)) {
+        appState.bookmarks = appState.bookmarks.filter(id => id !== cardId);
+      } else {
+        appState.bookmarks.push(cardId);
+      }
+      saveState();
+      renderWikiCards();
+    }
+
+    function renderWikiCards() {
+      const container = document.getElementById('wikiCardsContainer');
+      const countEl = document.getElementById('wikiCardFilteredCount');
+      if (!container) return;
+
+      const q = (document.getElementById('wikiSearchInput')?.value || '').toLowerCase();
+      const filter = appState.currentWikiFilter;
+
+      let list = WIKI_CARDS.filter(c => {
+        const matchesFilter = filter === 'ALL' || 
+          (filter === 'BOOKMARK' ? appState.bookmarks.includes(c.id) : c.cat === filter);
+        const matchesQuery = !q || c.title.toLowerCase().includes(q) || c.desc.toLowerCase().includes(q);
+        return matchesFilter && matchesQuery;
+      });
+
+      if (countEl) countEl.innerText = list.length;
+
+      if (appState.currentWikiMode === 'flashcard') {
+        // Flashcard Mode
+        container.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
+        container.innerHTML = list.map(c => `
+          <div class="flashcard h-64 cursor-pointer" onclick="this.classList.toggle('flipped')">
+            <div class="flashcard-inner relative w-full h-full card-theme rounded-xl border shadow-xs">
+              <!-- Front -->
+              <div class="flashcard-front absolute inset-0 p-5 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[10px] px-2 py-0.5 rounded-full font-mono bg-stone-100 text-stone-500">${c.badge}</span>
+                    <span class="text-xs text-stone-400">點擊翻牌 ➔</span>
+                  </div>
+                  <h3 class="text-lg font-bold text-stone-900 mt-4">${c.title}</h3>
+                  <div class="text-xs text-stone-500 font-mono">${c.subtitle}</div>
+                </div>
+                <div class="text-xs text-stone-400 italic">考考自己：這個形態/指標的核心邏輯與操作陷阱是什麼？</div>
+              </div>
+              <!-- Back -->
+              <div class="flashcard-back absolute inset-0 p-5 flex flex-col justify-between bg-stone-50 rounded-xl">
+                <div class="space-y-2 text-xs">
+                  <div class="font-bold text-stone-800">${c.title}</div>
+                  <p class="text-stone-600">${c.desc}</p>
+                  <div class="p-2 rounded bg-amber-50 text-amber-900 font-medium">${c.rules}</div>
+                  <div class="text-[11px] text-rose-700">${c.mistake}</div>
+                </div>
+                <div class="text-[10px] text-stone-400 text-right">再點擊一次翻回正面</div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      } else {
+        // Standard Grid Mode
+        container.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
+        container.innerHTML = list.map(c => {
+          const isBookmarked = appState.bookmarks.includes(c.id);
+          return `
+            <div class="card-theme rounded-xl p-5 border space-y-3 flex flex-col justify-between">
+              <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] px-2 py-0.5 rounded-full font-mono font-bold ${c.cat === 'JLAW' ? 'bg-amber-100 text-amber-900 border border-amber-300' : 'bg-stone-100 text-stone-600'}">
+                    ${c.badge}
+                  </span>
+                  <button onclick="toggleBookmark('${c.id}')" class="text-sm text-stone-400 hover:text-amber-500 transition">
+                    ${isBookmarked ? '⭐' : '☆'}
+                  </button>
+                </div>
+                <div>
+                  <h3 class="text-sm font-bold text-stone-900">${c.title}</h3>
+                  <span class="text-[11px] text-stone-400 font-mono">${c.subtitle}</span>
+                </div>
+                <p class="text-xs text-stone-600 leading-relaxed">${c.desc}</p>
+                <div class="p-2.5 rounded-lg bg-stone-50 border text-xs text-stone-700 space-y-1">
+                  <div>${c.rules}</div>
+                  <div class="text-[11px] text-rose-600">${c.mistake}</div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    // =========================================================================
+    // TRADINGVIEW SANDBOX INTEGRATION
+    // =========================================================================
+    function changeSandboxTicker(ticker) {
+      appState.currentSandboxTicker = ticker;
+      loadTradingViewWidget(ticker);
+      showToast(`已切換圖表至 ${ticker}`);
+    }
+
+    function loadTradingViewWidget(symbol) {
+      const container = document.getElementById('tradingview_widget_container');
+      if (!container) return;
+
+      container.innerHTML = `
+        <iframe 
+          src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_widget&symbol=${encodeURIComponent(symbol)}&interval=D&hidesidetoolbar=0&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=light&style=1&timezone=Asia%2FHong_Kong"
+          style="width: 100%; height: 100%; border: none;"
+          allowtransparency="true" 
+          scrolling="no" 
+          allowfullscreen>
+        </iframe>
+      `;
+    }
+
+    function saveApiConfig() {
+      showToast('API 端點已儲存至本地轉接層！');
+    }
+
+    // =========================================================================
+    // HELPERS & CLOCK
+    // =========================================================================
+    function initLiveClock() {
+      const clockEl = document.getElementById('liveHktTime');
+      setInterval(() => {
+        const now = new Date();
+        const options = { timeZone: 'Asia/Hong_Kong', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+        if (clockEl) clockEl.innerText = now.toLocaleTimeString('zh-HK', options);
+      }, 1000);
+    }
+
+    function calculateBreakevenWinrate() {
+      const rr = parseFloat(document.getElementById('calcRR').value) || 2;
+      const be = (1 / (1 + rr)) * 100;
+      document.getElementById('calcBreakevenWinrate').innerText = `${be.toFixed(1)}%`;
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toastNotification');
+      const m = document.getElementById('toastMsg');
+      if (t && m) {
+        m.innerText = msg;
+        t.classList.remove('translate-y-12', 'opacity-0');
+        setTimeout(() => {
+          t.classList.add('translate-y-12', 'opacity-0');
+        }, 2500);
+      }
+    }
+
+    function exportData() {
+      const blob = new Blob([JSON.stringify(appState, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `tamaster_backup_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('已匯出完整資料備份 JSON');
+    }
+  </script>
+</body>
+</html>
+'''
+
+with open('tamaster_jlaw_workbench.html', 'w', encoding='utf-8') as f:
+    f.write(html_content)
+
+print("FILE_SAVED_SUCCESSFULLY")
